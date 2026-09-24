@@ -1,0 +1,20 @@
+{
+  "general_context": "Combarranquilla es una Caja de Compensación Familiar que atiende a trabajadores afiliados, sus familias, pensionados, independientes y público general en Barranquilla y municipios del Atlántico (Soledad, Malambo, Sabanalarga, Puerto Colombia). Ofrece subsidios (cuota monetaria, vivienda, protección al cesante), formación para el trabajo, crédito social, recreación, turismo y programas sociales. Las tarifas de los servicios dependen de la categoría de afiliación (A, B o C).",
+  "glossary": {
+    "CCF": "Caja de Compensación Familiar",
+    "SMMLV": "salario mínimo mensual legal vigente",
+    "MPC": "Mecanismo de Protección al Cesante",
+    "PILA": "Planilla Integrada de Liquidación de Aportes",
+    "PQRS": "peticiones, quejas, reclamos y sugerencias",
+    "VIS": "vivienda de interés social",
+    "SST": "Seguridad y Salud en el Trabajo",
+    "RUT": "Registro Único Tributario"
+  },
+  "relations": {
+    "categoría": "La categoría de afiliación depende del salario del trabajador: A hasta 2 SMMLV, B más de 2 y hasta 4 SMMLV, C más de 4 SMMLV.",
+    "categoria": "La categoría de afiliación depende del salario del trabajador: A hasta 2 SMMLV, B más de 2 y hasta 4 SMMLV, C más de 4 SMMLV.",
+    "subsidio": "En Combarranquilla hay varios subsidios distintos: cuota monetaria (subsidio familiar en dinero), subsidio de vivienda y protección al cesante (desempleo). Responde sobre el que mencione la pregunta.",
+    "desempleo": "El subsidio de desempleo corresponde al Mecanismo de Protección al Cesante.",
+    "cuota monetaria": "La cuota monetaria es el subsidio familiar en dinero que se paga mensualmente por cada persona a cargo que cumpla los requisitos."
+  }
+}

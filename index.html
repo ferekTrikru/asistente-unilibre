@@ -1,0 +1,1297 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Asistente Combarranquilla</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="color-scheme" content="light" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
+<link rel="icon" href="/icons/icon-192.png" sizes="192x192" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Asistente Combarranquilla" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ============ Tokens ============ */
+  :root{
+    --bg:                #ffffff;
+    --bg-well:            #e9f1e3;
+    --surface:            #f3f8ef;
+    --surface-2:          #e8f1e1;
+    --stroke:             rgba(0,90,45,.11);
+    --stroke-strong:      rgba(0,90,45,.22);
+    --text-primary:       #12301d;
+    --text-secondary:     #475e4f;
+    --text-tertiary:      #667b6d;
+    --accent:             #007a3d;
+    --accent-bright:      #15934a;
+    --accent-deep:        #005a2c;
+    --accent-core:        #d6ecb0;
+    --shadow-ambient:     rgba(0,122,61,.22);
+    --sun: #e0ab0e;
+    --leaf: #a0ac28;
+    --font-display:       'Nunito', 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+    --font-sans:          'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  }
+
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; overflow:hidden; overscroll-behavior:none; }
+  body{
+    background: var(--bg-well);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection{ background: var(--accent); color:#fff; }
+  button{ font-family:inherit; }
+
+  /* ============ Stage — pinned to the visual viewport (fixed+inset beats
+     vh/dvh on mobile Chrome/Safari, whose dynamic toolbar resizes the layout
+     viewport and can otherwise leave the page scrollable behind the app) ============ */
+  .stage{
+    position:fixed; inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(60% 45% at 50% 100%, rgba(0,122,61,.16), transparent 70%),
+      var(--bg-well);
+  }
+
+  .app{
+    position:relative;
+    width:100%;
+    max-width:432px;
+    height:100%;
+    max-height:940px;
+    display:flex;
+    flex-direction:column;
+    overflow:hidden;
+    background: var(--bg);
+    isolation:isolate;
+  }
+  @media (min-width:680px){
+    .app{
+      height:min(92dvh, 940px);
+      border-radius:34px;
+      box-shadow:
+        0 0 0 1px var(--stroke),
+        0 40px 100px -20px rgba(18,48,29,.22),
+        0 0 140px -40px var(--shadow-ambient);
+    }
+  }
+
+  /* ambient backdrop: white -> soft leaf-green/sun bloom -> yellow swoosh (echoes the logo underline) */
+  .ambient{
+    position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(70% 38% at 50% 86%, rgba(160,172,40,.20), transparent 65%),
+      radial-gradient(90% 42% at 50% 106%, rgba(224,171,14,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdf9 55%, #f0f6ea 100%);
+  }
+  .ambient::after{
+    content:"";
+    position:absolute; left:-10%; right:-10%; bottom:9%;
+    height:2px;
+    background:linear-gradient(90deg, transparent, rgba(224,171,14,.55) 40%, rgba(240,196,40,.95) 50%, rgba(224,171,14,.55) 60%, transparent);
+    height:3px;
+    filter:blur(.4px);
+    opacity:.6;
+    transform:rotate(-3deg) scaleX(1.3);
+  }
+  .ambient .grain{
+    position:absolute; inset:0;
+    background-image:radial-gradient(rgba(0,90,45,.5) .6px, transparent .6px);
+    background-size:14px 14px;
+    -webkit-mask-image:radial-gradient(55% 35% at 18% 96%, #000 0%, transparent 70%);
+            mask-image:radial-gradient(55% 35% at 18% 96%, #000 0%, transparent 70%);
+    opacity:.12;
+  }
+
+  /* ============ Header ============ */
+  .topbar{
+    position:relative; z-index:3;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: max(18px, env(safe-area-inset-top)) 18px 8px;
+  }
+  .iconbtn{
+    width:38px; height:38px; border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid transparent;
+    color:var(--text-secondary);
+    cursor:pointer;
+    transition:background .18s ease, border-color .18s ease, color .18s ease;
+  }
+  .iconbtn:hover{ background:var(--surface); border-color:var(--stroke); color:var(--text-primary); }
+  .iconbtn:active{ transform:scale(.94); }
+  .iconbtn svg{ width:19px; height:19px; }
+
+  .brand{ display:flex; align-items:center; }
+  .brand img{ height:40px; width:auto; display:block; border-radius:10px; box-shadow:0 4px 14px -6px rgba(0,103,68,.5); }
+
+  .topbar-spacer{ width:38px; height:38px; flex-shrink:0; }
+
+  /* ============ Drawer ============ */
+  .scrim{
+    position:absolute; inset:0; z-index:10;
+    background:rgba(18,48,29,.28);
+    backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+  }
+  .app.drawer-open .scrim{ opacity:1; pointer-events:auto; }
+
+  .drawer{
+    position:absolute; top:0; bottom:0; left:0; z-index:11;
+    width:78%; max-width:300px;
+    background:linear-gradient(175deg, #ffffff, #f1f7ec);
+    border-right:1px solid var(--stroke);
+    transform:translateX(-100%);
+    transition:transform .32s cubic-bezier(.32,.72,.24,1);
+    padding:max(20px, env(safe-area-inset-top)) 16px 16px;
+    display:flex; flex-direction:column; gap:4px;
+  }
+  .app.drawer-open .drawer{ transform:translateX(0); }
+
+  .drawer h2{
+    display:flex; align-items:center; gap:10px;
+    font-family:var(--font-display); font-weight:800; font-style:italic;
+    font-size:19px; color:var(--accent);
+    padding:6px 10px 16px;
+  }
+  .drawer-mark{ height:28px; width:auto; border-radius:7px; }
+  .drawer-item{
+    display:flex; align-items:center; gap:12px;
+    padding:11px 10px; border-radius:11px;
+    color:var(--text-secondary); font-size:14px; font-weight:600;
+    text-decoration:none;
+    cursor:pointer; transition:background .15s ease, color .15s ease;
+  }
+  .drawer-item:hover{ background:var(--surface); color:var(--text-primary); }
+  .drawer-item svg{ width:17px; height:17px; opacity:.8; flex-shrink:0; }
+  .drawer-sep{ height:1px; background:var(--stroke); margin:10px 4px; }
+  .drawer-foot{ margin-top:auto; padding:10px; font-size:11.5px; color:var(--text-tertiary); }
+
+  /* ============ Hero (idle state) ============ */
+  .hero{
+    position:relative; z-index:2;
+    flex:1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:26px;
+    padding:10px 30px 0;
+    transition:opacity .38s ease, transform .38s ease;
+  }
+  .app.chatting .hero{
+    display:none;
+  }
+
+  /* orb-wrap keeps the original footprint so the hero's layout/spacing never
+     moves; the canvas itself renders larger (via inset) than that footprint
+     and overflows it, so the shader's glow has room to fade out. A radial
+     mask fades the canvas's own alpha to fully transparent well inside that
+     larger box — this (not mix-blend-mode, which had a small but consistent
+     color mismatch at the canvas edge in Chrome) is what makes the edge
+     disappear: at true alpha 0 there is nothing to blend, so no seam is
+     possible regardless of exact shader colors. */
+  .orb-wrap{
+    position:relative;
+    width:min(52vw, 220px); height:min(52vw, 220px);
+  }
+  canvas#orb{
+    position:absolute; top:50%; left:50%;
+    width:115%; height:115%;
+    transform:translate(-50%,-50%);
+    display:block;
+    -webkit-mask-image: radial-gradient(circle closest-side, #000 50%, transparent 90%);
+    mask-image: radial-gradient(circle closest-side, #000 50%, transparent 90%);
+  }
+
+  .greet{ text-align:center; display:flex; flex-direction:column; gap:10px; }
+  .greet .hi{
+    font-family:var(--font-sans); font-weight:700; font-size:13px;
+    letter-spacing:.14em; text-transform:uppercase; color:var(--accent-bright);
+    opacity:.85;
+  }
+  .greet h1{
+    font-family:var(--font-display); font-weight:800; font-style:italic;
+    font-size:clamp(26px, 6.6vw, 34px); line-height:1.18;
+    color:var(--accent);
+    text-wrap:balance;
+  }
+  .greet p{
+    font-size:14.5px; color:var(--text-secondary); font-weight:500;
+    max-width:280px; margin:0 auto; line-height:1.5;
+  }
+
+  .chips{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:8px;
+    max-width:340px;
+  }
+  .chip{
+    border:1px solid var(--stroke-strong);
+    background:rgba(0,90,45,.02);
+    color:var(--text-secondary);
+    font-size:12.5px; font-weight:600;
+    padding:9px 14px; border-radius:100px;
+    cursor:pointer;
+    transition:border-color .18s ease, color .18s ease, background .18s ease, transform .12s ease;
+  }
+  .chip:hover{ border-color:var(--accent); color:var(--text-primary); background:rgba(0,122,61,.09); }
+  .chip:active{ transform:scale(.96); }
+
+  /* ============ Thread (chat state) ============ */
+  .thread{
+    position:relative; z-index:2;
+    flex:1; min-height:0;
+    display:none;
+    flex-direction:column;
+    overflow-y:auto;
+    -webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;
+    padding:6px 18px 14px;
+    gap:16px;
+    scrollbar-width:thin;
+    scrollbar-color:rgba(21,147,74,.35) transparent;
+  }
+  .thread::-webkit-scrollbar{ width:5px; }
+  .thread::-webkit-scrollbar-track{ background:transparent; }
+  .thread::-webkit-scrollbar-thumb{ background:rgba(21,147,74,.35); border-radius:100px; }
+  .thread::-webkit-scrollbar-thumb:hover{ background:rgba(21,147,74,.55); }
+  .app.chatting .thread{ display:flex; }
+
+  .msg{
+    display:flex; gap:10px; max-width:86%;
+    animation:msg-in .38s cubic-bezier(.22,.9,.32,1) both;
+  }
+  @keyframes msg-in{
+    from{ opacity:0; transform:translateY(10px); }
+    to{ opacity:1; transform:translateY(0); }
+  }
+  .msg.user{ align-self:flex-end; flex-direction:row-reverse; }
+  .msg.bot{ align-self:flex-start; }
+
+  .bubble{
+    padding:12px 15px; border-radius:18px;
+    font-size:14.5px; line-height:1.5; font-weight:500;
+    white-space:pre-line;
+  }
+  .msg.user .bubble{
+    background:linear-gradient(155deg, var(--accent), #005a2c);
+    color:#fff;
+    border-bottom-right-radius:6px;
+    box-shadow:0 6px 18px -8px rgba(0,122,61,.6);
+  }
+  .msg.bot .bubble{
+    background:var(--surface);
+    border:1px solid var(--stroke);
+    color:var(--text-primary);
+    border-bottom-left-radius:6px;
+  }
+  .bubble-sources{
+    margin:-8px 0 0 38px;
+    font-size:12px; color:var(--text-secondary);
+    display:flex; flex-wrap:wrap; gap:6px;
+  }
+  .bubble-sources span{
+    background:var(--surface); border:1px solid var(--stroke);
+    border-radius:999px; padding:3px 10px;
+  }
+
+  .bot-avatar{
+    width:28px; height:28px; border-radius:50%; flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, #b9d65a, var(--accent) 45%, var(--accent-deep) 100%);
+    box-shadow:0 0 12px -2px rgba(0,122,61,.8);
+    margin-top:2px;
+  }
+  .bot-avatar.thinking{ animation:think-pulse 1.1s ease-in-out infinite; }
+  @keyframes think-pulse{
+    0%,100%{ transform:scale(1); filter:brightness(1); }
+    50%{ transform:scale(1.15); filter:brightness(1.35); }
+  }
+
+  .typing{ display:flex; gap:4px; align-items:center; padding:14px 15px; }
+  .typing i{
+    width:6px; height:6px; border-radius:50%; background:var(--text-tertiary);
+    animation:typing-bounce 1.2s ease-in-out infinite;
+  }
+  .typing i:nth-child(2){ animation-delay:.15s; }
+  .typing i:nth-child(3){ animation-delay:.3s; }
+  @keyframes typing-bounce{
+    0%,60%,100%{ transform:translateY(0); opacity:.5; }
+    30%{ transform:translateY(-4px); opacity:1; }
+  }
+
+  /* ============ Composer ============ */
+  .composer{
+    position:relative; z-index:3;
+    padding:10px 16px max(16px, env(safe-area-inset-bottom));
+    flex-shrink:0;
+  }
+  .composer-bar{
+    display:flex; align-items:center; gap:6px;
+    background:rgba(255,255,255,.92);
+    -webkit-backdrop-filter:blur(24px) saturate(180%);
+    backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(0,90,45,.16);
+    border-radius:100px;
+    padding:6px 6px 6px 20px;
+    box-shadow:0 10px 34px -14px rgba(18,48,29,.15), inset 0 1px 0 rgba(255,255,255,.08);
+    transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
+  }
+  .composer-bar:focus-within{
+    border-color:var(--accent);
+    background:#fff;
+    box-shadow:0 0 0 4px rgba(0,122,61,.14), inset 0 1px 0 rgba(255,255,255,.1);
+  }
+  .composer-bar input{
+    flex:1; background:none; border:none; outline:none;
+    color:var(--text-primary); font-size:14.5px; font-weight:500;
+    font-family:var(--font-sans);
+    min-width:0;
+  }
+  .composer-bar input::placeholder{ color:var(--text-tertiary); }
+
+  .round-btn{
+    width:38px; height:38px; border-radius:50%; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    border:none; cursor:pointer;
+    transition:transform .15s ease, background .18s ease, opacity .18s ease;
+  }
+  .round-btn:active{ transform:scale(.92); }
+  .mic-btn{ background:transparent; color:var(--text-secondary); }
+  .mic-btn:hover{ color:var(--text-primary); }
+  .send-btn{
+    background:linear-gradient(155deg, var(--accent-bright), var(--accent));
+    color:#fff;
+    box-shadow:0 4px 14px -4px rgba(0,122,61,.7);
+    opacity:0; pointer-events:none; width:0; margin-right:-4px;
+  }
+  .composer-bar.has-text .send-btn{ opacity:1; pointer-events:auto; width:38px; margin-right:0; }
+  .composer-bar.has-text .mic-btn{ display:none; }
+  .send-btn svg, .mic-btn svg{ width:16px; height:16px; }
+
+  .disclaimer{
+    text-align:center; font-size:10.5px; color:var(--text-tertiary);
+    margin-top:9px; letter-spacing:.01em;
+  }
+
+  /* ============ In-chat action cards (scheduling, handoff, links) ============ */
+  .bubble.card{
+    display:flex; flex-wrap:wrap; gap:8px;
+    background:var(--surface); border:1px solid var(--stroke);
+  }
+  .card-chip{
+    border:1px solid var(--stroke-strong);
+    background:rgba(0,90,45,.02);
+    color:var(--text-secondary);
+    font-size:12.5px; font-weight:600;
+    padding:8px 13px; border-radius:100px;
+    cursor:pointer;
+    transition:border-color .18s ease, color .18s ease, background .18s ease, transform .12s ease, opacity .18s ease;
+  }
+  .card-chip:hover:not(:disabled){ border-color:var(--accent); color:var(--text-primary); background:rgba(0,122,61,.09); }
+  .card-chip.is-suggested{ border-color:rgba(21,147,74,.5); color:var(--text-primary); }
+  .card-chip.is-picked{ background:linear-gradient(155deg, var(--accent-bright), var(--accent)); border-color:transparent; color:#fff; }
+  .card-chip:disabled{ pointer-events:none; }
+  .card-chip.is-disabled{ opacity:.35; }
+
+  .linkcard-wrap{ padding:8px !important; }
+  .linkcard{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:11px 15px; border-radius:14px;
+    background:linear-gradient(155deg, rgba(21,147,74,.16), rgba(0,122,61,.05));
+    border:1px solid rgba(21,147,74,.32);
+    color:var(--text-primary); text-decoration:none;
+    font-size:13.5px; font-weight:700;
+    transition:border-color .18s ease, background .18s ease, transform .12s ease;
+  }
+  .linkcard:hover{ border-color:var(--accent); background:linear-gradient(155deg, rgba(21,147,74,.24), rgba(0,122,61,.1)); }
+  .linkcard:active{ transform:scale(.97); }
+  .linkcard svg{ width:15px; height:15px; flex-shrink:0; }
+
+  .drawer-item{ position:relative; }
+  .drawer-item .tag{
+    margin-left:auto; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent-bright); background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.32);
+    padding:2px 7px; border-radius:100px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="stage">
+  <div class="app" id="app">
+    <div class="ambient"><div class="grain"></div></div>
+
+    <div class="scrim" id="scrim"></div>
+    <nav class="drawer" id="drawer">
+      <h2><img class="drawer-mark" src="icons/combarranquilla-mark.png" alt="" />Asistente Combarranquilla</h2>
+      <div class="drawer-item" data-action="new">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+        Nueva conversación
+      </div>
+      <a class="drawer-item" href="screens/programas/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        Programas de formación
+      </a>
+      <a class="drawer-item" href="screens/citas/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8.5 15.5l1.8 1.8L15.5 13.5"/></svg>
+        Mis citas
+      </a>
+      <a class="drawer-item" href="screens/proceso/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M12 20V4M20 20v-7"/></svg>
+        Mi proceso
+      </a>
+      <div class="drawer-sep"></div>
+      <div class="drawer-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
+        Ajustes
+      </div>
+      <a class="drawer-item" href="screens/asesor/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M19.5 20a4 4 0 0 1-4 4h-2"/></svg>
+        Vista del asesor <span class="tag">Demo</span>
+      </a>
+      <div class="drawer-foot">Combarranquilla &middot; Agente de Admisiones</div>
+    </nav>
+
+    <header class="topbar">
+      <button class="iconbtn" id="menuBtn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+      <div class="brand"><img src="icons/combarranquilla-logo.png" alt="Combarranquilla" /></div>
+      <div class="topbar-spacer" aria-hidden="true"></div>
+    </header>
+
+    <main class="hero" id="hero">
+      <div class="orb-wrap">
+        <canvas id="orb"></canvas>
+      </div>
+      <div class="greet">
+        <h1>¿En qué puedo<br>ayudarte hoy?</h1>
+        <p>Pregúntame por afiliación, subsidios, programas de formación, crédito o recreación, o agenda una cita con un asesor.</p>
+      </div>
+    </main>
+
+    <section class="thread" id="thread"></section>
+
+    <footer class="composer">
+      <div class="composer-bar" id="composerBar">
+        <input id="input" type="text" placeholder="Pregunta lo que sea…" autocomplete="off" />
+        <button class="round-btn mic-btn" aria-label="Usar micrófono">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg>
+        </button>
+        <button class="round-btn send-btn" id="sendBtn" aria-label="Enviar">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4 20-7Z"/></svg>
+        </button>
+      </div>
+    </footer>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ---------- Orb: WebGL liquid sphere (height-mapped fluid lighting) ---------- */
+  var speed = 1; // kept: still referenced by typingThenRespond() below
+
+  var AJUSTES_ORBE = {
+    velocidad: 0.55,
+    escala:    1.35,
+    relieve:   0.62,
+    brillo:    26.0,
+    pliegue:   2.60,
+    giro:      0.55
+  };
+
+  var ORBE_VERT = "attribute vec2 aPos; void main(){ gl_Position = vec4(aPos, 0.0, 1.0); }";
+
+  var ORBE_FRAG = [
+  "precision highp float;",
+  "uniform vec2  uRes;",
+  "uniform float uTime, uEnergia;",
+  "uniform float uVel, uEscala, uRelieve, uBrillo, uPliegue, uGiro;",
+  "const vec3 C_FONDO   = vec3(1.000, 1.000, 1.000);",
+  "const vec3 C_NEGRO   = vec3(0.000, 0.230, 0.110);",
+  "const vec3 C_SANGRE  = vec3(0.000, 0.480, 0.240);",
+  "const vec3 C_VIVO    = vec3(0.630, 0.680, 0.160);",
+  "const vec3 C_MAGENTA = vec3(0.880, 0.670, 0.055);",
+  "const vec3 C_LUZ     = vec3(1.000, 0.980, 0.880);",
+  "float hash(vec3 p){",
+  "  p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));",
+  "  p *= 17.0;",
+  "  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));",
+  "}",
+  "float ruido(vec3 x){",
+  "  vec3 i = floor(x); vec3 f = fract(x);",
+  "  f = f * f * (3.0 - 2.0 * f);",
+  "  return mix(",
+  "    mix(mix(hash(i+vec3(0.0,0.0,0.0)), hash(i+vec3(1.0,0.0,0.0)), f.x),",
+  "        mix(hash(i+vec3(0.0,1.0,0.0)), hash(i+vec3(1.0,1.0,0.0)), f.x), f.y),",
+  "    mix(mix(hash(i+vec3(0.0,0.0,1.0)), hash(i+vec3(1.0,0.0,1.0)), f.x),",
+  "        mix(hash(i+vec3(0.0,1.0,1.0)), hash(i+vec3(1.0,1.0,1.0)), f.x), f.y), f.z);",
+  "}",
+  "float fbm(vec3 p){",
+  "  float v = 0.0, a = 0.56;",
+  "  for(int i = 0; i < 4; i++){ v += a * ruido(p); p *= 2.06; a *= 0.5; }",
+  "  return v;",
+  "}",
+  "void main(){",
+  "  vec2 uv = (gl_FragCoord.xy - 0.5 * uRes) / min(uRes.x, uRes.y);",
+  "  float r = length(uv);",
+  "  float t = uTime;",
+  "  float e = uEnergia;",
+  "  float flujo = t * uVel * (1.0 + 1.1 * e);",
+  "  float respira = 1.0 + 0.017 * sin(t * 0.8) + 0.013 * e * sin(t * 2.6);",
+  "  float R = 0.385 * respira;",
+  "  float aa = 1.8 / min(uRes.x, uRes.y);",
+  "  float mascara = smoothstep(R, R - aa - 0.004, r);",
+  "  vec3 col = C_FONDO;",
+  "  float halo      = exp(-max(r - R, 0.0) * 9.5);",
+  "  float haloAncho = exp(-max(r - R, 0.0) * 3.0);",
+  "  col = mix(col, C_VIVO,    halo      * (0.30 + 0.25 * e));",
+  "  col = mix(col, C_MAGENTA, haloAncho * (0.10 + 0.12 * e));",
+  "  if(mascara > 0.001){",
+  "    float z = sqrt(max(1.0 - (r/R)*(r/R), 0.0));",
+  "    vec3 n = vec3(uv / R, z);",
+  "    float ang = flujo * uGiro + (1.0 - r/R) * 1.2;",
+  "    float ca = cos(ang), sa = sin(ang);",
+  "    vec2 su = mat2(ca, -sa, sa, ca) * (uv / R);",
+  "    vec3 p = vec3(su, z) * uEscala - n * (1.0 - z) * 0.40;",
+  "    p.y += 0.30 * sin(p.x * 1.6 + flujo * 1.8);",
+  "    p.x += 0.20 * sin(p.y * 1.2 - flujo * 1.3);",
+  "    vec3 q = vec3(",
+  "      fbm(p + vec3(0.0, 0.0, flujo)),",
+  "      fbm(p + vec3(5.2, 1.3, flujo * 0.85)),",
+  "      fbm(p + vec3(9.1, 4.7, flujo * 1.15))",
+  "    );",
+  "    vec3 pw = p + uPliegue * q;",
+  "    float eps = 0.055;",
+  "    float h  = fbm(pw + vec3(0.0, 0.0, flujo * 0.55));",
+  "    float hx = fbm(pw + vec3(eps, 0.0, flujo * 0.55));",
+  "    float hy = fbm(pw + vec3(0.0, eps, flujo * 0.55));",
+  "    float onda = sin(r * 26.0 - t * 5.0) * 0.5 + 0.5;",
+  "    h += onda * 0.10 * e;",
+  "    vec2 pendiente = vec2(hx - h, hy - h) / eps;",
+  "    vec3 N = normalize(n + vec3(-pendiente * uRelieve * (0.35 + 0.65 * z), 0.0));",
+  "    vec3 V = vec3(0.0, 0.0, 1.0);",
+  "    vec3 L1 = normalize(vec3(-0.48, 0.58, 0.66));",
+  "    vec3 L2 = normalize(vec3( 0.55,-0.42, 0.72));",
+  "    float dif1 = max(dot(N, L1), 0.0);",
+  "    float dif2 = max(dot(N, L2), 0.0);",
+  "    vec3 H1 = normalize(L1 + V);",
+  "    vec3 H2 = normalize(L2 + V);",
+  "    float esp1 = pow(max(dot(N, H1), 0.0), uBrillo);",
+  "    float esp2 = pow(max(dot(N, H2), 0.0), uBrillo * 1.6);",
+  "    vec3 Rv = reflect(-V, N);",
+  "    float entorno = smoothstep(-0.15, 0.95, Rv.y);",
+  "    float fresnel = pow(1.0 - z, 3.0);",
+  "    float hv = clamp(h, 0.0, 1.0);",
+  "    vec3 cuerpo = mix(C_NEGRO, C_SANGRE, smoothstep(0.20, 0.82, hv));",
+  "    cuerpo = mix(cuerpo, C_VIVO, pow(smoothstep(0.60, 1.00, hv), 2.0) * 0.50);",
+  "    vec3 esfera = cuerpo * (0.20 + 0.85 * dif1 + 0.25 * dif2);",
+  "    esfera += C_LUZ     * esp1 * (1.05 + 0.55 * e);",
+  "    esfera += C_MAGENTA * esp2 * (0.60 + 0.40 * e);",
+  "    esfera += C_LUZ     * entorno * 0.10;",
+  "    esfera += C_VIVO    * fresnel * (0.38 + 0.28 * e);",
+  "    float nucleo = exp(-pow(r / R, 2.0) * 3.2);",
+  "    esfera += C_VIVO * nucleo * (0.05 + 0.70 * e) * (0.74 + 0.26 * sin(t * 3.1));",
+  "    esfera *= mix(0.72, 1.0, smoothstep(0.0, 0.80, r / R));",
+  "    col = mix(col, esfera, mascara);",
+  "  }",
+  "  col = pow(max(col, 0.0), vec3(0.90));",
+  "  gl_FragColor = vec4(col, 1.0);",
+  "}"
+  ].join("\n");
+
+  function EsferaLiquida(canvas, ajustes){
+    this.canvas = canvas;
+    this.aj = Object.assign({}, AJUSTES_ORBE, ajustes || {});
+    this.energia = 0; this.energiaObjetivo = 0;
+    this.tiempo = 0; this.ultimo = performance.now(); this.activo = true;
+    this.dprMax = 1.75;
+    // The canvas element is rendered slightly larger than its visual footprint
+    // (see CSS: canvas#orb width/height) so the mask has a little room to work
+    // with. Dividing uRes by this factor keeps the sphere the same on-screen
+    // size regardless of that extra canvas margin.
+    this.zoom = 1.15;
+
+    var gl = canvas.getContext('webgl', {
+      alpha:false, antialias:false, depth:false, powerPreference:'low-power'
+    });
+    if(!gl){ this.respaldo(); return; }
+    this.gl = gl;
+
+    var prog = this.compilar(ORBE_VERT, ORBE_FRAG);
+    if(!prog){ this.respaldo(); return; }
+    gl.useProgram(prog); this.prog = prog;
+
+    var buf = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+    var loc = gl.getAttribLocation(prog, 'aPos');
+    gl.enableVertexAttribArray(loc);
+    gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
+
+    this.u = {};
+    ['uRes','uTime','uEnergia','uVel','uEscala','uRelieve','uBrillo','uPliegue','uGiro'].forEach(function(k){
+      this.u[k] = gl.getUniformLocation(prog, k);
+    }, this);
+
+    this.onResize = function(){ this.redimensionar(); }.bind(this);
+    window.addEventListener('resize', this.onResize, { passive:true });
+    this.redimensionar();
+
+    this.onVis = function(){ this.activo = !document.hidden; this.ultimo = performance.now(); }.bind(this);
+    document.addEventListener('visibilitychange', this.onVis);
+    this.mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+
+    this.bucle = this.bucle.bind(this);
+    this.raf = requestAnimationFrame(this.bucle);
+  }
+
+  EsferaLiquida.prototype.compilar = function(vs, fs){
+    var gl = this.gl;
+    function crear(tipo, src){
+      var s = gl.createShader(tipo);
+      gl.shaderSource(s, src); gl.compileShader(s);
+      if(!gl.getShaderParameter(s, gl.COMPILE_STATUS)){
+        console.error(gl.getShaderInfoLog(s)); return null;
+      }
+      return s;
+    }
+    var v = crear(gl.VERTEX_SHADER, vs), f = crear(gl.FRAGMENT_SHADER, fs);
+    if(!v || !f) return null;
+    var p = gl.createProgram();
+    gl.attachShader(p, v); gl.attachShader(p, f); gl.linkProgram(p);
+    if(!gl.getProgramParameter(p, gl.LINK_STATUS)){ console.error(gl.getProgramInfoLog(p)); return null; }
+    return p;
+  };
+
+  EsferaLiquida.prototype.redimensionar = function(){
+    var gl = this.gl, c = this.canvas;
+    var dpr = Math.min(window.devicePixelRatio || 1, this.dprMax);
+    var w = Math.max(1, Math.round(c.clientWidth * dpr));
+    var h = Math.max(1, Math.round(c.clientHeight * dpr));
+    if(c.width !== w || c.height !== h){ c.width = w; c.height = h; gl.viewport(0,0,w,h); }
+  };
+
+  EsferaLiquida.prototype.bucle = function(ahora){
+    this.raf = requestAnimationFrame(this.bucle);
+    if(!this.activo){ this.ultimo = ahora; return; }
+    var dt = Math.min((ahora - this.ultimo)/1000, 0.05);
+    this.ultimo = ahora;
+    if(this.mq && this.mq.matches) dt *= 0.15;
+    this.tiempo += dt;
+    this.energia += (this.energiaObjetivo - this.energia) * Math.min(dt*2.4, 1);
+
+    var gl = this.gl, u = this.u, a = this.aj;
+    gl.uniform2f(u.uRes, this.canvas.width/this.zoom, this.canvas.height/this.zoom);
+    gl.uniform1f(u.uTime, this.tiempo);
+    gl.uniform1f(u.uEnergia, this.energia);
+    gl.uniform1f(u.uVel, a.velocidad);
+    gl.uniform1f(u.uEscala, a.escala);
+    gl.uniform1f(u.uRelieve, a.relieve);
+    gl.uniform1f(u.uBrillo, a.brillo);
+    gl.uniform1f(u.uPliegue, a.pliegue);
+    gl.uniform1f(u.uGiro, a.giro);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+  };
+
+  EsferaLiquida.prototype.pensando = function(){ this.energiaObjetivo = 1; };
+  EsferaLiquida.prototype.reposo = function(){ this.energiaObjetivo = 0; };
+  EsferaLiquida.prototype.set = function(k, v){ this.aj[k] = v; };
+
+  EsferaLiquida.prototype.respaldo = function(){
+    var cont = this.canvas.parentElement; this.canvas.remove();
+    var d = document.createElement('div');
+    d.style.cssText =
+      'width:100%;height:100%;border-radius:50%;background:' +
+      'radial-gradient(circle at 34% 30%, rgba(255,255,255,.55), transparent 46%),' +
+      'radial-gradient(circle at 62% 68%, rgba(224,171,14,.45), transparent 52%),' +
+      'radial-gradient(circle at 50% 50%, #15934a 0%, #007a3d 62%, #005a2c 100%);' +
+      'box-shadow:0 0 70px rgba(0,122,61,.35);animation:respirar 5.5s ease-in-out infinite;';
+    var st = document.createElement('style');
+    st.textContent = '@keyframes respirar{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}';
+    document.head.appendChild(st); cont.appendChild(d);
+  };
+
+  var orbe = new EsferaLiquida(document.getElementById('orb'), AJUSTES_ORBE);
+
+  /* ---------- Drawer ---------- */
+  var app = document.getElementById('app');
+  var menuBtn = document.getElementById('menuBtn');
+  var scrim = document.getElementById('scrim');
+  menuBtn.addEventListener('click', function(){ app.classList.add('drawer-open'); });
+  scrim.addEventListener('click', function(){ app.classList.remove('drawer-open'); });
+
+  /* =====================================================================
+     Estado compartido (perfil del aspirante, citas, transcripción)
+     Persistido en localStorage para que Programas / Mis citas / Mi proceso
+     / Vista del asesor lean el mismo contexto que construye el chat.
+  ===================================================================== */
+  var CF_KEY = 'cfAdmisionesState';
+  function ulDefaultState(){
+    return {
+      profile: {
+        programa: null, sede: null, etapa: 'Exploración', interes: 'Medio',
+        necesidad: null, proximaAccion: 'Explorar programas de formación', cita: null
+      },
+      appointments: [],
+      lastMessages: []
+    };
+  }
+  function ulLoadState(){
+    try{
+      var raw = localStorage.getItem(CF_KEY);
+      if(raw){
+        var parsed = JSON.parse(raw);
+        var base = ulDefaultState();
+        return {
+          profile: Object.assign(base.profile, parsed.profile||{}),
+          appointments: parsed.appointments||[],
+          lastMessages: parsed.lastMessages||[]
+        };
+      }
+    }catch(e){}
+    return ulDefaultState();
+  }
+  function saveState(){ try{ localStorage.setItem(CF_KEY, JSON.stringify(state)); }catch(e){} }
+  var state = ulLoadState();
+
+  /* =====================================================================
+     Base de conocimiento institucional (datos de demostración)
+  ===================================================================== */
+  var KB_PROGRAMS = [
+    { id:'enfermeria', nombre:'Auxiliar en Enfermería', facultad:'Escuela de Salud', sedes:['Barranquilla','Sabanalarga','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad','Carné de vacunación'], costoAprox:'Desde $1.150.000 COP / semestre (afiliados cat. A)', aliases:['enfermeria','enfermera','enfermero','auxiliar de enfermeria'] },
+    { id:'farmacia', nombre:'Auxiliar en Servicios Farmacéuticos', facultad:'Escuela de Salud', sedes:['Barranquilla','Soledad'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)', aliases:['farmacia','farmaceutico','drogueria','medicamentos'] },
+    { id:'software', nombre:'Técnico en Desarrollo de Software', facultad:'Escuela de Tecnología', sedes:['Barranquilla','Soledad','Malambo'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Tecnología. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $950.000 COP / semestre (afiliados cat. A)', aliases:['sistemas','software','programacion','informatica','desarrollo web'] },
+    { id:'administrativo', nombre:'Auxiliar Administrativo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'], modalidad:'Presencial y virtual', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $820.000 COP / semestre (afiliados cat. A)', aliases:['administracion','administrativo','empresas','negocios','oficina','secretariado'] },
+    { id:'contable', nombre:'Auxiliar Contable y Financiero', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Sabanalarga'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $850.000 COP / semestre (afiliados cat. A)', aliases:['contable','contabilidad','contador','contaduria','financiero'] },
+    { id:'sst', nombre:'Seguridad y Salud en el Trabajo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $1.050.000 COP / semestre (afiliados cat. A)', aliases:['seguridad y salud','salud en el trabajo','sst','riesgos laborales'] },
+    { id:'infancia', nombre:'Atención Integral a la Primera Infancia', facultad:'Escuela de Educación y Desarrollo Social', sedes:['Barranquilla','Malambo','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Educación y Desarrollo Social.', requisitos:['Diploma de bachiller','Documento de identidad','Certificado de antecedentes'], costoAprox:'Desde $900.000 COP / semestre (afiliados cat. A)', aliases:['primera infancia','infancia','ninos','preescolar','pedagogia'] },
+    { id:'gastronomia', nombre:'Cocina y Gastronomía', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $1.200.000 COP / semestre (afiliados cat. A)', aliases:['cocina','gastronomia','chef','culinaria'] },
+    { id:'turismo', nombre:'Servicios Turísticos y Hoteleros', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía.', requisitos:['Diploma de bachiller','Documento de identidad','Inglés básico'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)', aliases:['turismo','hotel','hoteleria','guia turistico','recepcion'] }
+  ];
+  var SEDES = ['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'];
+
+  function strip(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+
+  /* Backend RAG: responde preguntas libres a partir de documentos institucionales.
+     En desarrollo local corre en localhost:8000; al desplegarlo, cambia esta URL. */
+  var RAG_BACKEND_URL = 'http://localhost:8000';
+
+  function askInstitutionalRag(question){
+    return fetch(RAG_BACKEND_URL + '/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question })
+    }).then(function(res){
+      if(!res.ok) throw new Error('backend_error');
+      return res.json();
+    });
+  }
+
+  var TOPIC_KEYWORDS = {
+    financiacion: ['matricula','pago','costo','precio','cuota','tarifa','financiacion','credito','beca','descuento','subsidio','categoria','afiliad'],
+    requisitos: ['requisito','documento','inscrib','saber 11','icfes'],
+    calendario: ['calendario','fecha','cuando puedo','inicio de clases','semestre','cohorte'],
+    modalidad: ['virtual','presencial','modalidad']
+  };
+  var HUMAN_KEYWORDS = ['hablar con alguien','hablar con un asesor','asesor','cita','agendar','llamada','entrevista','reunion','humano','contactar'];
+  var VOCATIONAL_KEYWORDS = ['no se que estudiar','no se que carrera','orientacion','orientarme','ayudenme a elegir','que carrera me recomienda','no tengo claro'];
+
+  function findPrograms(text){
+    return KB_PROGRAMS.filter(function(p){
+      return p.aliases.some(function(a){ return text.indexOf(a) > -1; });
+    });
+  }
+  function findSedes(text){
+    return SEDES.filter(function(s){ return text.indexOf(strip(s)) > -1; });
+  }
+  function topicLabel(t){
+    return { financiacion:'Información financiera', requisitos:'Requisitos de admisión', calendario:'Fechas y calendario', modalidad:'Modalidad de estudio' }[t] || null;
+  }
+  function genericTopicAnswer(topic){
+    return {
+      financiacion:'En Combarranquilla la tarifa depende de tu categoría de afiliación: las categorías A y B tienen tarifa subsidiada, y además hay crédito social para financiar tu programa. Cuéntame qué programa te interesa y te doy el valor aproximado.',
+      requisitos:'Los requisitos generales son documento de identidad y diploma de bachiller (algunos programas aceptan noveno grado aprobado). Si eres afiliado, trae tu certificado de afiliación para acceder a la tarifa subsidiada. ¿De qué programa quieres los requisitos exactos?',
+      calendario:'Normalmente hay dos cohortes al año y las inscripciones abren varias semanas antes de cada una. Dime el programa y te confirmo fechas específicas.',
+      modalidad:'Varios programas se ofrecen en modalidad presencial y algunos también en virtual. ¿Qué programa te interesa para confirmarte la modalidad?'
+    }[topic];
+  }
+
+  /* =====================================================================
+     Agendamiento — tipo de atención, modalidad, franja horaria, confirmación
+  ===================================================================== */
+  var ATTENTION_TYPES = ['Admisiones','Asesoría académica','Orientación vocacional','Afiliación y subsidios','Crédito social','Información financiera'];
+  var ADVISORS = {
+    'Admisiones':['Laura Méndez','Andrés Rojas'], 'Información financiera':['Camila Torres'],
+    'Orientación vocacional':['Diego Salazar'], 'Asesoría académica':['Paula Nieto'],
+    'Afiliación y subsidios':['Mónica Herrera'], 'Crédito social':['Camila Torres']
+  };
+  var WEEKDAYS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
+  var MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
+  var EMAIL_RE = /[^\s@,]+@[^\s@,]+\.[^\s@,]+/;
+  var PHONE_RE = /(\+?\d[\d\s-]{6,}\d)/;
+  var pendingContactCapture = null;
+
+  function pickAdvisor(tipo){ var pool = ADVISORS[tipo]||['Equipo de admisiones']; return pool[Math.floor(Math.random()*pool.length)]; }
+  function generateSlots(){
+    var d1 = new Date(); d1.setDate(d1.getDate()+1); d1.setHours(10,0,0,0);
+    var d2 = new Date(); d2.setDate(d2.getDate()+1); d2.setHours(15,0,0,0);
+    return [d1,d2];
+  }
+  function formatSlot(d){
+    var hh = d.getHours();
+    var ampm = hh>=12 ? 'p. m.' : 'a. m.';
+    var h12 = hh%12; if(h12===0) h12=12;
+    return WEEKDAYS[d.getDay()]+' '+d.getDate()+' de '+MONTHS[d.getMonth()]+' a las '+h12+':00 '+ampm;
+  }
+
+  function startScheduling(defaultType, context){
+    typingThenRespond(function(){
+      addMsg('bot','Puedo ayudarte a agendar una cita. ¿Qué tipo de atención necesitas?');
+      addChipCard(ATTENTION_TYPES, function(tipo){
+        addMsg('user', tipo);
+        askModalidad(tipo, context);
+      }, defaultType);
+    });
+  }
+  function askModalidad(tipo, context){
+    typingThenRespond(function(){
+      addMsg('bot','¿Prefieres una cita virtual o presencial?');
+      addChipCard(['Virtual','Presencial'], function(modalidad){
+        addMsg('user', modalidad);
+        offerSlots(tipo, modalidad, context);
+      });
+    });
+  }
+  function offerSlots(tipo, modalidad, context){
+    typingThenRespond(function(){
+      var slots = generateSlots();
+      addMsg('bot','Tengo disponibilidad con un asesor de '+tipo.toLowerCase()+' '+formatSlot(slots[0])+' o '+formatSlot(slots[1])+'. ¿Cuál prefieres?');
+      addChipCard(slots.map(formatSlot), function(label, idx){
+        addMsg('user', label);
+        askContact(tipo, modalidad, slots[idx], context);
+      });
+    });
+  }
+  function askContact(tipo, modalidad, slot, context){
+    typingThenRespond(function(){
+      addMsg('bot','Para enviarte la confirmación, ¿cuál es tu correo? (si quieres, agrega también un teléfono, ej: "nombre@correo.com, 3001234567")');
+      pendingContactCapture = function handleContact(text){
+        var emailMatch = text.match(EMAIL_RE);
+        if(!emailMatch){
+          typingThenRespond(function(){
+            addMsg('bot','Ese texto no parece un correo válido. ¿Puedes escribirlo de nuevo? Ej: nombre@correo.com');
+          });
+          pendingContactCapture = handleContact;
+          return;
+        }
+        var rest = text.replace(emailMatch[0], '');
+        var phoneMatch = rest.match(PHONE_RE);
+        confirmAppointment(tipo, modalidad, slot, context, emailMatch[0], phoneMatch ? phoneMatch[0].replace(/\s|-/g,'') : null);
+      };
+    });
+  }
+  function notifyAppointmentBackend(appt, context){
+    fetch(RAG_BACKEND_URL + '/appointments', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        tipo: appt.tipo,
+        modalidad: appt.modalidad,
+        slot_label: appt.label,
+        slot_iso: appt.iso,
+        asesor: appt.asesor,
+        email: appt.email,
+        telefono: appt.telefono,
+        programa: (context && context.programa) || state.profile.programa || null,
+        sede: (context && context.sede) || state.profile.sede || null,
+        necesidad: (context && context.necesidad) || state.profile.necesidad || null
+      })
+    }).then(function(res){ return res.json(); }).then(function(data){
+      typingThenRespond(function(){
+        if(data && data.email_sent){
+          addMsg('bot','Te envié la confirmación de la cita a '+appt.email+'.');
+        }else if(data && data.email_detail && data.email_detail.indexOf('simulated')===0){
+          addMsg('bot','Tu cita quedó guardada. (Modo demo: el envío de correo real está desactivado — normalmente aquí llegaría la confirmación a '+appt.email+'.)');
+        }else{
+          addMsg('bot','Guardé tu cita, pero no pude enviarte el correo de confirmación justo ahora. Puedes verla igual en "Mis citas".');
+        }
+      });
+      if(data && data.id && appt.telefono){
+        offerConfirmationCall(data.id, appt);
+      }
+    }).catch(function(){
+      typingThenRespond(function(){
+        addMsg('bot','Guardé tu cita en el chat. El servicio de confirmación por correo no está disponible en este momento.');
+      });
+    });
+  }
+  function offerConfirmationCall(appointmentId, appt){
+    typingThenRespond(function(){
+      addMsg('bot','¿Quieres que te llamemos al '+appt.telefono+' para confirmar la cita por teléfono?');
+      addChipCard(['Sí, llámenme','No, gracias'], function(choice){
+        addMsg('user', choice);
+        if(choice==='Sí, llámenme'){
+          triggerConfirmationCall(appointmentId, appt);
+        }
+      });
+    });
+  }
+  function triggerConfirmationCall(appointmentId, appt){
+    typingThenRespond(function(){
+      addMsg('bot','Perfecto, estoy programando la llamada...');
+      fetch(RAG_BACKEND_URL + '/appointments/' + appointmentId + '/call', { method:'POST' })
+        .then(function(res){ return res.json(); })
+        .then(function(data){
+          typingThenRespond(function(){
+            if(data && data.call_scheduled){
+              addMsg('bot','Listo, te llamaremos en breve al '+appt.telefono+'.');
+            }else if(data && data.call_detail && data.call_detail.indexOf('simulated')===0){
+              addMsg('bot','(Modo demo: la llamada real está desactivada — normalmente aquí te llamaríamos al '+appt.telefono+' para confirmar.)');
+            }else{
+              addMsg('bot','No pude programar la llamada en este momento. Tu cita igual quedó confirmada.');
+            }
+          });
+        }).catch(function(){
+          typingThenRespond(function(){
+            addMsg('bot','El servicio de llamadas no está disponible en este momento. Tu cita igual quedó confirmada.');
+          });
+        });
+    });
+  }
+  function confirmAppointment(tipo, modalidad, slot, context, email, telefono){
+    typingThenRespond(function(){
+      var advisor = pickAdvisor(tipo);
+      var appt = { id:Date.now(), tipo:tipo, modalidad:modalidad, label:formatSlot(slot), iso:slot.toISOString(), asesor:advisor, contexto:context||{}, email:email, telefono:telefono||null };
+      state.appointments.push(appt);
+      state.profile.cita = appt;
+      state.profile.etapa = 'Cita';
+      state.profile.interes = 'Alto';
+      state.profile.proximaAccion = 'Asistir a la cita de '+tipo.toLowerCase()+' el '+appt.label;
+      saveState();
+      addMsg('bot','Listo. Tu cita quedó agendada para el '+appt.label+' — '+tipo+' · '+modalidad+', con '+advisor+'.');
+      notifyAppointmentBackend(appt, context);
+      typingThenRespond(function(){
+        addMsg('bot','También dejé un resumen de nuestra conversación para el asesor, así no tendrás que repetir nada.');
+        addLinkCard('Ver resumen para el asesor', 'screens/asesor/index.html');
+      });
+    });
+  }
+  function followUpEscalation(tipoSugerido, context){
+    typingThenRespond(function(){
+      addMsg('bot','Detecto que tu duda depende de tu caso particular. Para no darte información imprecisa, te propongo hablar con un asesor.');
+      startScheduling(tipoSugerido, context);
+    });
+  }
+
+  /* =====================================================================
+     Orientación vocacional — cuando el aspirante no sabe qué estudiar
+  ===================================================================== */
+  var AREA_MAP = {
+    'Salud':['enfermeria','farmacia'], 'Tecnología':['software'],
+    'Administración y negocios':['administrativo','contable'], 'Seguridad laboral':['sst'],
+    'Educación e infancia':['infancia'], 'Turismo y gastronomía':['gastronomia','turismo']
+  };
+  function startVocational(){
+    addMsg('bot','Perfecto, te ayudo a orientarte. ¿Qué área te llama más la atención?');
+    addChipCard(Object.keys(AREA_MAP), function(area){
+      addMsg('user', area);
+      state.profile.etapa = 'Orientación';
+      state.profile.necesidad = 'Orientación vocacional';
+      saveState();
+      vocationalRecommend(area);
+    });
+  }
+  function vocationalRecommend(area){
+    typingThenRespond(function(){
+      var progs = KB_PROGRAMS.filter(function(p){ return AREA_MAP[area].indexOf(p.id)>-1; });
+      var names = progs.map(function(p){ return p.nombre; }).join(' y ');
+      addMsg('bot','Dentro de esa área, en Combarranquilla suelen encajar bien '+names+'. '+(progs[0]?progs[0].resumen:''));
+      addChipCard(['Ver estos programas','Agendar una orientación'], function(choice){
+        addMsg('user', choice);
+        if(choice==='Ver estos programas'){
+          addLinkCard('Abrir catálogo de programas', 'screens/programas/index.html');
+        }else{
+          startScheduling('Orientación vocacional', { necesidad:'Orientación vocacional — área: '+area });
+        }
+      });
+    });
+  }
+
+  /* =====================================================================
+     Clasificador de intención + generación de respuesta
+  ===================================================================== */
+  function updateProfileFromSignals(programs, sedes, topic, isHuman){
+    var changed = false;
+    if(programs.length){ state.profile.programa = programs[0].nombre; changed = true; }
+    if(sedes.length){ state.profile.sede = sedes[0]; changed = true; }
+    if(topic){ state.profile.necesidad = topicLabel(topic); changed = true; }
+    if(state.profile.etapa === 'Exploración' && (programs.length || topic)){ state.profile.etapa = 'Interés'; changed = true; }
+    if(isHuman){ state.profile.interes = 'Alto'; state.profile.proximaAccion = 'Atender cita con asesor'; changed = true; }
+    if(changed) saveState();
+  }
+
+  function handleUserMessage(raw){
+    var text = strip(raw);
+    var programs = findPrograms(text);
+    var sedes = findSedes(text);
+    var isHuman = HUMAN_KEYWORDS.some(function(k){ return text.indexOf(k)>-1; });
+    var isVocational = VOCATIONAL_KEYWORDS.some(function(k){ return text.indexOf(k)>-1; });
+    var topic = null;
+    Object.keys(TOPIC_KEYWORDS).forEach(function(t){
+      if(!topic && TOPIC_KEYWORDS[t].some(function(k){ return text.indexOf(k)>-1; })) topic = t;
+    });
+
+    updateProfileFromSignals(programs, sedes, topic, isHuman);
+
+    if(isVocational && !programs.length){
+      typingThenRespond(startVocational);
+      return;
+    }
+
+    if(programs.length){
+      var p = programs[0];
+      var lines = ['Sí, tenemos '+p.nombre+' ('+p.facultad+'), modalidad '+p.modalidad+', duración '+p.duracion+'.'];
+      if(sedes.length){
+        var tieneSede = p.sedes.indexOf(sedes[0]) > -1;
+        lines.push(tieneSede ? 'Se dicta en la sede '+sedes[0]+'.' : 'Por ahora no se dicta en '+sedes[0]+'. Sedes disponibles: '+p.sedes.join(', ')+'.');
+      }else{
+        lines.push('Sedes disponibles: '+p.sedes.join(', ')+'.');
+      }
+      if(topic==='financiacion') lines.push('Valor aproximado: '+p.costoAprox+' (tarifa de referencia; varía según tu categoría de afiliación).');
+      if(topic==='requisitos') lines.push('Requisitos: '+p.requisitos.join(', ')+'.');
+
+      typingThenRespond(function(){
+        addMsg('bot', lines.join(' '));
+        if(isHuman){
+          followUpEscalation(topic==='financiacion' ? 'Información financiera' : 'Admisiones', { programa:p.nombre, sede:sedes[0]||p.sedes[0], necesidad:raw });
+        }
+      });
+      return;
+    }
+
+    if(isHuman){
+      typingThenRespond(function(){
+        addMsg('bot','Con gusto te conecto con un asesor. Vamos a agendar la cita.');
+        var tipoSugerido = /subsidi|afili|cuota monetaria|vivienda|cesante|desemple/.test(text) ? 'Afiliación y subsidios'
+          : (/credito|prestamo/.test(text) ? 'Crédito social'
+          : (topic==='financiacion' ? 'Información financiera' : (topic==='requisitos' ? 'Admisiones' : 'Asesoría académica')));
+        startScheduling(tipoSugerido, { necesidad:raw });
+      });
+      return;
+    }
+
+    /* Las preguntas de tema (tarifas, subsidios, requisitos, fechas...) van primero a
+       los documentos de Combarranquilla; la respuesta genérica solo se usa si no hay datos. */
+    var typing = addTyping();
+    function fallbackToHuman(){
+      typing.remove();
+      if(topic){ addMsg('bot', genericTopicAnswer(topic)); return; }
+      addMsg('bot','No tengo información suficiente para darte una respuesta precisa sobre eso. Puedo ayudarte a agendar una cita con un asesor de Combarranquilla.');
+      startScheduling('Asesoría académica', { necesidad:raw });
+    }
+    askInstitutionalRag(raw).then(function(data){
+      typing.remove();
+      if(data && data.answer && data.sources && data.sources.length){
+        addRagAnswer(data.answer, data.sources);
+      }else{
+        fallbackToHuman();
+      }
+    }).catch(fallbackToHuman);
+  }
+
+  /* =====================================================================
+     Render del hilo de chat
+  ===================================================================== */
+  var thread = document.getElementById('thread');
+  var input = document.getElementById('input');
+  var bar = document.getElementById('composerBar');
+  var sendBtn = document.getElementById('sendBtn');
+
+  function pushTranscript(role, text){
+    state.lastMessages.push({ role:role, text:text, t:Date.now() });
+    if(state.lastMessages.length>14) state.lastMessages.shift();
+    saveState();
+  }
+
+  function addMsg(role, text){
+    var msg = document.createElement('div');
+    msg.className = 'msg ' + role;
+    if(role==='bot'){
+      var av = document.createElement('div');
+      av.className = 'bot-avatar';
+      msg.appendChild(av);
+    }
+    var b = document.createElement('div');
+    b.className = 'bubble';
+    b.textContent = text;
+    msg.appendChild(b);
+    thread.appendChild(msg);
+    thread.scrollTop = thread.scrollHeight;
+    pushTranscript(role, text);
+    return msg;
+  }
+
+  function addRagAnswer(text, sources){
+    addMsg('bot', text);
+    if(sources && sources.length){
+      var wrap = document.createElement('div');
+      wrap.className = 'bubble-sources';
+      sources.slice(0,3).forEach(function(label){
+        var pill = document.createElement('span');
+        pill.textContent = label;
+        wrap.appendChild(pill);
+      });
+      thread.appendChild(wrap);
+      thread.scrollTop = thread.scrollHeight;
+    }
+  }
+
+  function addChipCard(options, onPick, preselect){
+    var msg = document.createElement('div');
+    msg.className = 'msg bot';
+    var av = document.createElement('div'); av.className = 'bot-avatar'; msg.appendChild(av);
+    var b = document.createElement('div'); b.className = 'bubble card';
+    options.forEach(function(label, i){
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'card-chip' + (preselect && label===preselect ? ' is-suggested' : '');
+      btn.textContent = label;
+      btn.addEventListener('click', function(){
+        Array.prototype.forEach.call(b.querySelectorAll('.card-chip'), function(x){ x.disabled = true; if(x!==btn) x.classList.add('is-disabled'); });
+        btn.classList.add('is-picked');
+        onPick(label, i);
+      });
+      b.appendChild(btn);
+    });
+    msg.appendChild(b);
+    thread.appendChild(msg);
+    thread.scrollTop = thread.scrollHeight;
+    return msg;
+  }
+
+  function addLinkCard(label, href){
+    var msg = document.createElement('div');
+    msg.className = 'msg bot';
+    var av = document.createElement('div'); av.className = 'bot-avatar'; msg.appendChild(av);
+    var b = document.createElement('div'); b.className = 'bubble linkcard-wrap';
+    var a = document.createElement('a'); a.className = 'linkcard'; a.href = href;
+    a.innerHTML = label + ' <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+    b.appendChild(a);
+    msg.appendChild(b);
+    thread.appendChild(msg);
+    thread.scrollTop = thread.scrollHeight;
+    pushTranscript('bot', '[enlace] '+label);
+    return msg;
+  }
+
+  function addTyping(){
+    var msg = document.createElement('div');
+    msg.className = 'msg bot';
+    var av = document.createElement('div');
+    av.className = 'bot-avatar thinking';
+    msg.appendChild(av);
+    var b = document.createElement('div');
+    b.className = 'bubble typing';
+    b.innerHTML = '<i></i><i></i><i></i>';
+    msg.appendChild(b);
+    thread.appendChild(msg);
+    thread.scrollTop = thread.scrollHeight;
+    return msg;
+  }
+
+  function typingThenRespond(fn){
+    speed = 2.4;
+    var t = addTyping();
+    var delay = 650 + Math.random()*550;
+    setTimeout(function(){ t.remove(); fn(); speed = 1; }, delay);
+  }
+
+  function trySend(){
+    var val = input.value.trim();
+    if(!val) return;
+    if(!app.classList.contains('chatting')) app.classList.add('chatting');
+    addMsg('user', val);
+    input.value = '';
+    bar.classList.remove('has-text');
+    if(pendingContactCapture){
+      var captureFn = pendingContactCapture;
+      pendingContactCapture = null;
+      captureFn(val);
+      return;
+    }
+    handleUserMessage(val);
+  }
+
+  input.addEventListener('input', function(){
+    bar.classList.toggle('has-text', input.value.trim().length>0);
+  });
+  input.addEventListener('keydown', function(e){
+    if(e.key==='Enter'){ e.preventDefault(); trySend(); }
+  });
+  sendBtn.addEventListener('click', trySend);
+
+  document.querySelector('[data-action="new"]').addEventListener('click', function(){
+    thread.innerHTML = '';
+    app.classList.remove('chatting');
+    app.classList.remove('drawer-open');
+    state.lastMessages = [];
+    saveState();
+  });
+
+  /* ---------- Consumir una pregunta enviada desde otra pantalla ---------- */
+  (function consumePendingQuestion(){
+    var pending = null;
+    try{ pending = localStorage.getItem('cfPendingQuestion'); }catch(e){}
+    if(!pending) return;
+    try{ localStorage.removeItem('cfPendingQuestion'); }catch(e){}
+    setTimeout(function(){
+      input.value = pending;
+      bar.classList.add('has-text');
+      trySend();
+    }, 550);
+  })();
+
+  /* ---------- Saludo con memoria de conversaciones anteriores ---------- */
+  (function initGreeting(){
+    var p = state.profile;
+    if(!p.programa) return;
+    var greetP = document.querySelector('.greet p');
+    greetP.textContent = 'La última vez hablamos sobre '+p.programa+(p.sede ? ' en la sede '+p.sede : '')+'. ¿Quieres continuar desde ahí?';
+    var chips = document.createElement('div');
+    chips.className = 'chips';
+    var btn = document.createElement('button');
+    btn.className = 'chip';
+    btn.textContent = 'Continuar donde quedamos';
+    btn.addEventListener('click', function(){
+      input.value = '¿Me cuentas más sobre '+p.programa+'?';
+      bar.classList.add('has-text');
+      trySend();
+    });
+    chips.appendChild(btn);
+    document.querySelector('.greet').appendChild(chips);
+  })();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js'); });
+  }
+</script>
+</body>
+</html>

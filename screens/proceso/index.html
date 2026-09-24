@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Mi proceso · Asistente Combarranquilla</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="color-scheme" content="light" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Asistente Combarranquilla" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --bg-well:#e9f1e3; --surface:#f3f8ef; --surface-2:#e8f1e1;
+    --stroke:rgba(0,90,45,.11); --stroke-strong:rgba(0,90,45,.22);
+    --text-primary:#12301d; --text-secondary:#475e4f; --text-tertiary:#667b6d;
+    --accent:#007a3d; --accent-bright:#15934a; --accent-deep:#005a2c;
+    --shadow-ambient:rgba(0,122,61,.22);
+    --sun: #e0ab0e;
+    --leaf: #a0ac28;
+    --font-display:'Nunito','Manrope',-apple-system,'Segoe UI',sans-serif;
+    --font-sans:'Manrope',-apple-system,'Segoe UI',sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; overflow:hidden; overscroll-behavior:none; }
+  body{ background:var(--bg-well); color:var(--text-primary); font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased; }
+  button{ font-family:inherit; }
+  a{ color:inherit; text-decoration:none; }
+
+  .stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(60% 45% at 50% 100%, rgba(0,122,61,.16), transparent 70%), var(--bg-well); }
+  .app{ position:relative; width:100%; max-width:432px; height:100%; max-height:940px;
+    display:flex; flex-direction:column; overflow:hidden; background:var(--bg); isolation:isolate; }
+  @media (min-width:680px){
+    .app{ height:min(92dvh, 940px); border-radius:34px;
+      box-shadow:0 0 0 1px var(--stroke), 0 40px 100px -20px rgba(18,48,29,.22), 0 0 140px -40px var(--shadow-ambient); }
+  }
+  .ambient{ position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(70% 38% at 50% 86%, rgba(160,172,40,.20), transparent 65%),
+      radial-gradient(90% 42% at 50% 106%, rgba(224,171,14,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdf9 55%, #f0f6ea 100%);
+  }
+
+  .topbar{ position:relative; z-index:3; display:flex; align-items:center; gap:12px;
+    padding:max(18px, env(safe-area-inset-top)) 16px 8px; flex-shrink:0; }
+  .iconbtn{ width:38px; height:38px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid transparent; color:var(--text-secondary);
+    cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease; }
+  .iconbtn:hover{ background:var(--surface); border-color:var(--stroke); color:var(--text-primary); }
+  .iconbtn:active{ transform:scale(.94); }
+  .iconbtn svg{ width:19px; height:19px; }
+  .topbar h1{ flex:1; font-family:var(--font-display); font-style:italic; font-weight:800;
+    font-size:18px; text-align:center; padding-right:38px; }
+
+  .scrim{ position:absolute; inset:0; z-index:10; background:rgba(18,48,29,.28); backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; }
+  .app.drawer-open .scrim{ opacity:1; pointer-events:auto; }
+  .drawer{ position:absolute; top:0; bottom:0; left:0; z-index:11; width:78%; max-width:300px;
+    background:linear-gradient(175deg, #ffffff, #f1f7ec); border-right:1px solid var(--stroke);
+    transform:translateX(-100%); transition:transform .32s cubic-bezier(.32,.72,.24,1);
+    padding:max(20px, env(safe-area-inset-top)) 16px 16px; display:flex; flex-direction:column; gap:4px; }
+  .app.drawer-open .drawer{ transform:translateX(0); }
+  .drawer h2{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:800; font-style:italic; font-size:19px; color:var(--accent); padding:6px 10px 16px; }
+  .drawer-mark{ height:28px; width:auto; border-radius:7px; }
+  .drawer-item{ display:flex; align-items:center; gap:12px; padding:11px 10px; border-radius:11px;
+    color:var(--text-secondary); font-size:14px; font-weight:600;
+    cursor:pointer; transition:background .15s ease, color .15s ease; position:relative; }
+  .drawer-item.is-active{ color:var(--text-primary); background:var(--surface); }
+  .drawer-item:hover{ background:var(--surface); color:var(--text-primary); }
+  .drawer-item svg{ width:17px; height:17px; opacity:.8; flex-shrink:0; }
+  .drawer-sep{ height:1px; background:var(--stroke); margin:10px 4px; }
+  .drawer-foot{ margin-top:auto; padding:10px; font-size:11.5px; color:var(--text-tertiary); }
+  .drawer-item .tag{ margin-left:auto; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent-bright); background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.32); padding:2px 7px; border-radius:100px; }
+
+  .content{ position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:16px 20px 26px;
+    display:flex; flex-direction:column; gap:22px; scrollbar-width:thin; scrollbar-color:rgba(21,147,74,.35) transparent; }
+  .content::-webkit-scrollbar{ width:5px; }
+  .content::-webkit-scrollbar-track{ background:transparent; }
+  .content::-webkit-scrollbar-thumb{ background:rgba(21,147,74,.35); border-radius:100px; }
+  .content::-webkit-scrollbar-thumb:hover{ background:rgba(21,147,74,.55); }
+
+  /* Stepper */
+  .stepper{ display:flex; justify-content:space-between; padding:6px 4px 0; }
+  .step{ display:flex; flex-direction:column; align-items:center; gap:8px; flex:1; position:relative; }
+  .step:not(:last-child)::after{
+    content:''; position:absolute; top:13px; left:calc(50% + 20px); right:calc(-50% + 20px);
+    height:2px; background:var(--stroke-strong); z-index:0;
+  }
+  .step.is-done:not(:last-child)::after{ background:var(--accent); }
+  .dot{ width:26px; height:26px; border-radius:50%; border:2px solid var(--stroke-strong);
+    background:var(--bg); display:flex; align-items:center; justify-content:center; z-index:1;
+    font-size:10px; font-weight:800; color:var(--text-tertiary); flex-shrink:0; }
+  .step.is-done .dot{ background:linear-gradient(155deg, var(--accent-bright), var(--accent)); border-color:transparent; color:#fff; }
+  .step.is-current .dot{ border-color:var(--accent-bright); color:var(--accent-bright); box-shadow:0 0 0 4px rgba(0,122,61,.16); }
+  .step label{ font-size:9.5px; font-weight:700; text-align:center; color:var(--text-tertiary); line-height:1.3; max-width:60px; }
+  .step.is-done label, .step.is-current label{ color:var(--text-primary); }
+
+  .card{ background:var(--surface); border:1px solid var(--stroke); border-radius:20px; padding:20px; }
+  .card h2{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:17px; margin-bottom:14px; }
+
+  .kv{ display:flex; flex-direction:column; gap:14px; }
+  .kv-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; }
+  .kv-row dt{ font-size:12.5px; color:var(--text-tertiary); font-weight:600; }
+  .kv-row dd{ font-size:13.5px; font-weight:700; color:var(--text-primary); text-align:right; }
+  .pill{ font-size:11px; font-weight:800; padding:4px 11px; border-radius:100px; }
+  .pill.alto{ color:#006633; background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.35); }
+  .pill.medio{ color:#7a5600; background:rgba(224,171,14,.14); border:1px solid rgba(224,171,14,.32); }
+  .pill.bajo{ color:var(--text-secondary); background:rgba(0,90,45,.04); border:1px solid var(--stroke-strong); }
+
+  .next-card{ display:flex; gap:14px; align-items:flex-start;
+    background:linear-gradient(155deg, rgba(21,147,74,.14), rgba(0,122,61,.04));
+    border:1px solid rgba(21,147,74,.28); border-radius:20px; padding:18px; }
+  .next-card svg{ width:20px; height:20px; color:var(--accent-bright); flex-shrink:0; margin-top:2px; }
+  .next-card strong{ display:block; font-size:13px; margin-bottom:3px; }
+  .next-card span{ font-size:12.5px; color:var(--text-secondary); line-height:1.5; }
+
+  .cta{ display:block; text-align:center; padding:13px; border-radius:100px; font-size:13.5px; font-weight:700;
+    color:#fff; background:linear-gradient(155deg, var(--accent-bright), var(--accent)); }
+
+  .empty{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; padding:20px; }
+  .empty h2{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:19px; }
+  .empty p{ font-size:13.5px; color:var(--text-secondary); max-width:260px; line-height:1.5; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="app" id="app">
+    <div class="ambient"></div>
+    <div class="scrim" id="scrim"></div>
+    <nav class="drawer" id="drawer">
+      <h2><img class="drawer-mark" src="../../icons/combarranquilla-mark.png" alt="" />Asistente Combarranquilla</h2>
+      <a class="drawer-item" href="../../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-11.8 7.8L4 21l1.7-5.2A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+        Volver al chat
+      </a>
+      <a class="drawer-item" href="../programas/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        Programas de formación
+      </a>
+      <a class="drawer-item" href="../citas/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8.5 15.5l1.8 1.8L15.5 13.5"/></svg>
+        Mis citas
+      </a>
+      <a class="drawer-item is-active" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M12 20V4M20 20v-7"/></svg>
+        Mi proceso
+      </a>
+      <div class="drawer-sep"></div>
+      <a class="drawer-item" href="../asesor/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M19.5 20a4 4 0 0 1-4 4h-2"/></svg>
+        Vista del asesor <span class="tag">Demo</span>
+      </a>
+      <div class="drawer-foot">Combarranquilla &middot; Agente de Admisiones</div>
+    </nav>
+
+    <header class="topbar">
+      <a class="iconbtn" href="../../index.html" aria-label="Volver al chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </a>
+      <h1>Mi proceso</h1>
+      <button class="iconbtn" id="menuBtn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </header>
+
+    <div class="content" id="content"></div>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CF_KEY = 'cfAdmisionesState';
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(CF_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return { profile:{}, appointments:[], lastMessages:[] };
+  }
+
+  var app = document.getElementById('app');
+  document.getElementById('menuBtn').addEventListener('click', function(){ app.classList.add('drawer-open'); });
+  document.getElementById('scrim').addEventListener('click', function(){ app.classList.remove('drawer-open'); });
+
+  var STAGES = ['Exploración','Interés','Orientación','Cita','Admisión'];
+  var content = document.getElementById('content');
+
+  function iconFlag(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 21V4M5 4h13l-3 4 3 4H5"/></svg>'; }
+
+  function render(){
+    var state = loadState();
+    var p = state.profile || {};
+
+    if(!p.programa && !p.necesidad && p.etapa==='Exploración'){
+      content.innerHTML =
+        '<div class="empty">'+
+          '<h2>Todavía no hay nada que mostrar</h2>'+
+          '<p>Cuando hables con el asistente, aquí verás en qué etapa vas de tu proceso de admisión.</p>'+
+          '<a class="cta" href="../../index.html" style="margin-top:6px;">Ir al chat</a>'+
+        '</div>';
+      return;
+    }
+
+    var currentIdx = STAGES.indexOf(p.etapa);
+    if(currentIdx<0) currentIdx = 0;
+
+    var stepper = '<div class="stepper">';
+    STAGES.forEach(function(s, i){
+      var cls = i<currentIdx ? 'is-done' : (i===currentIdx ? 'is-current' : '');
+      stepper += '<div class="step '+cls+'"><div class="dot">'+(i<currentIdx?'✓':(i+1))+'</div><label>'+s+'</label></div>';
+    });
+    stepper += '</div>';
+
+    var interesClass = p.interes==='Alto' ? 'alto' : (p.interes==='Bajo' ? 'bajo' : 'medio');
+
+    var card =
+      '<div class="card"><h2>Resumen de tu proceso</h2><dl class="kv">'+
+        row('Programa de interés', p.programa || 'Aún no definido')+
+        row('Sede', p.sede || 'Aún no definida')+
+        row('Nivel de interés', '<span class="pill '+interesClass+'">'+(p.interes||'Medio')+'</span>', true)+
+        row('Necesidad principal', p.necesidad || 'Explorando opciones')+
+        (p.cita ? row('Cita agendada', cap(p.cita.label)) : '')+
+      '</dl></div>';
+
+    var nextCard =
+      '<div class="next-card">'+iconFlag()+
+        '<div><strong>Próxima acción</strong><span>'+(p.proximaAccion || 'Seguir explorando programas de formación')+'</span></div>'+
+      '</div>';
+
+    content.innerHTML = stepper + card + nextCard +
+      '<a class="cta" href="../../index.html">Continuar en el chat</a>';
+  }
+
+  function row(label, value, raw){
+    return '<div class="kv-row"><dt>'+label+'</dt><dd>'+(raw?value:escapeHtml(value))+'</dd></div>';
+  }
+  function escapeHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+  render();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js'); });
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Vista del asesor · Asistente Combarranquilla</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="color-scheme" content="light" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Asistente Combarranquilla" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#ffffff; --bg-well:#e9f1e3; --surface:#f3f8ef; --surface-2:#e8f1e1;
+    --stroke:rgba(0,90,45,.11); --stroke-strong:rgba(0,90,45,.22);
+    --text-primary:#12301d; --text-secondary:#475e4f; --text-tertiary:#667b6d;
+    --accent:#007a3d; --accent-bright:#15934a; --info:#1f6aa8;
+    --shadow-ambient:rgba(0,122,61,.22);
+    --sun: #e0ab0e;
+    --leaf: #a0ac28;
+    --font-display:'Nunito','Manrope',-apple-system,'Segoe UI',sans-serif;
+    --font-sans:'Manrope',-apple-system,'Segoe UI',sans-serif;
+    --font-mono:'JetBrains Mono','SFMono-Regular',Menlo,monospace;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; overflow:hidden; overscroll-behavior:none; }
+  body{ background:var(--bg-well); color:var(--text-primary); font-family:var(--font-sans);
+    -webkit-font-smoothing:antialiased; }
+  button{ font-family:inherit; }
+  a{ color:inherit; text-decoration:none; }
+
+  .stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background:radial-gradient(60% 45% at 50% 0%, rgba(31,106,168,.10), transparent 70%), var(--bg-well); }
+  .app{ position:relative; width:100%; max-width:460px; height:100%; max-height:960px;
+    display:flex; flex-direction:column; overflow:hidden; background:var(--bg); isolation:isolate; }
+  @media (min-width:680px){
+    .app{ height:min(92dvh, 960px); border-radius:28px;
+      box-shadow:0 0 0 1px var(--stroke), 0 40px 100px -20px rgba(18,48,29,.24), 0 0 140px -50px var(--shadow-ambient); }
+  }
+  .ambient{ position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(70% 38% at 50% 86%, rgba(160,172,40,.20), transparent 65%),
+      radial-gradient(90% 42% at 50% 106%, rgba(224,171,14,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdf9 55%, #f0f6ea 100%); }
+
+  .topbar{ position:relative; z-index:3; display:flex; align-items:center; gap:12px;
+    padding:max(16px, env(safe-area-inset-top)) 16px 12px; flex-shrink:0; border-bottom:1px solid var(--stroke); }
+  .iconbtn{ width:36px; height:36px; border-radius:11px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid transparent; color:var(--text-secondary);
+    cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease; }
+  .iconbtn:hover{ background:var(--surface); border-color:var(--stroke); color:var(--text-primary); }
+  .iconbtn svg{ width:18px; height:18px; }
+  .topbar-title{ flex:1; display:flex; flex-direction:column; }
+  .topbar-title strong{ font-size:14.5px; font-weight:700; }
+  .topbar-title span{ font-size:11px; color:var(--text-tertiary); }
+  .panel-badge{ font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--info); background:rgba(31,106,168,.14); border:1px solid rgba(31,106,168,.32);
+    padding:4px 9px; border-radius:100px; flex-shrink:0; }
+
+  .content{ position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:18px 18px 26px;
+    display:flex; flex-direction:column; gap:16px; scrollbar-width:thin; scrollbar-color:rgba(31,106,168,.4) transparent; }
+  .content::-webkit-scrollbar{ width:5px; }
+  .content::-webkit-scrollbar-track{ background:transparent; }
+  .content::-webkit-scrollbar-thumb{ background:rgba(31,106,168,.4); border-radius:100px; }
+  .content::-webkit-scrollbar-thumb:hover{ background:rgba(31,106,168,.6); }
+
+  .lead{ display:flex; align-items:center; gap:14px; }
+  .avatar{ width:48px; height:48px; border-radius:50%; flex-shrink:0;
+    background:radial-gradient(circle at 35% 30%, #b9d65a, var(--accent) 45%, #005a2c 100%);
+    display:flex; align-items:center; justify-content:center; font-weight:800; font-size:16px; color:#fff; }
+  .lead h1{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:19px; }
+  .lead p{ font-size:12px; color:var(--text-tertiary); margin-top:2px; }
+
+  .grid{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .stat{ background:var(--surface); border:1px solid var(--stroke); border-radius:16px; padding:13px 14px; }
+  .stat dt{ font-size:10px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; color:var(--text-tertiary); margin-bottom:6px; }
+  .stat dd{ font-size:14px; font-weight:700; }
+  .stat.span2{ grid-column:1 / -1; }
+  .pill{ display:inline-block; font-size:10.5px; font-weight:800; padding:3px 10px; border-radius:100px; }
+  .pill.alto{ color:#006633; background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.35); }
+  .pill.medio{ color:#7a5600; background:rgba(224,171,14,.14); border:1px solid rgba(224,171,14,.32); }
+  .pill.bajo{ color:var(--text-secondary); background:rgba(0,90,45,.04); border:1px solid var(--stroke-strong); }
+
+  .section-title{ font-size:11px; font-weight:800; letter-spacing:.06em; text-transform:uppercase; color:var(--text-tertiary); margin:4px 0 -4px; }
+
+  .appt-card{ background:linear-gradient(155deg, rgba(31,106,168,.12), rgba(31,106,168,.02));
+    border:1px solid rgba(31,106,168,.28); border-radius:16px; padding:15px; display:flex; gap:12px; align-items:flex-start; }
+  .appt-card svg{ width:18px; height:18px; color:var(--info); flex-shrink:0; margin-top:2px; }
+  .appt-card strong{ display:block; font-size:13.5px; }
+  .appt-card span{ font-size:12px; color:var(--text-secondary); display:block; margin-top:2px; }
+
+  .transcript{ background:var(--surface); border:1px solid var(--stroke); border-radius:16px; padding:14px; }
+  .t-row{ display:flex; gap:10px; padding:7px 0; font-size:12.5px; line-height:1.5; border-bottom:1px solid var(--stroke); }
+  .t-row:last-child{ border-bottom:none; }
+  .t-role{ flex-shrink:0; width:56px; font-family:var(--font-mono); font-size:10px; font-weight:600;
+    text-transform:uppercase; letter-spacing:.04em; padding-top:1px; }
+  .t-row.user .t-role{ color:var(--accent-bright); }
+  .t-row.bot .t-role{ color:var(--info); }
+  .t-text{ color:var(--text-secondary); }
+
+  .empty{ flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; text-align:center; padding:20px; }
+  .empty svg{ width:34px; height:34px; color:var(--text-tertiary); }
+  .empty h2{ font-family:var(--font-display); font-style:italic; font-weight:800; font-size:18px; }
+  .empty p{ font-size:13px; color:var(--text-secondary); max-width:270px; line-height:1.5; }
+  .empty a{ margin-top:2px; padding:11px 22px; border-radius:100px; font-size:13px; font-weight:700;
+    color:#fff; background:linear-gradient(155deg, var(--accent-bright), var(--accent)); }
+
+  .foot-note{ text-align:center; font-size:10.5px; color:var(--text-tertiary); padding:0 20px 4px; }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="app" id="app">
+    <div class="ambient"></div>
+    <header class="topbar">
+      <a class="iconbtn" href="../../index.html" aria-label="Volver al chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </a>
+      <div class="topbar-title">
+        <strong>Vista del asesor</strong>
+        <span>Contexto entregado por el agente</span>
+      </div>
+      <span class="panel-badge">Demo</span>
+    </header>
+
+    <div class="content" id="content"></div>
+    <p class="foot-note">Panel interno de demostración — así es como un asesor humano recibe el contexto de la conversación, sin partir de cero.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var CF_KEY = 'cfAdmisionesState';
+  function loadState(){
+    try{
+      var raw = localStorage.getItem(CF_KEY);
+      if(raw) return JSON.parse(raw);
+    }catch(e){}
+    return { profile:{}, appointments:[], lastMessages:[] };
+  }
+
+  var content = document.getElementById('content');
+
+  function iconInfo(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>'; }
+  function iconCal(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/></svg>'; }
+  function iconInbox(){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.5 5h13l3 7v7a2 2 0 0 1-2 2H4.5a2 2 0 0 1-2-2v-7l3-7Z"/></svg>'; }
+
+  function render(){
+    var state = loadState();
+    var p = state.profile || {};
+    var messages = state.lastMessages || [];
+
+    if(!p.programa && !p.necesidad && !messages.length){
+      content.innerHTML =
+        '<div class="empty">'+iconInbox()+
+          '<h2>Sin conversaciones activas</h2>'+
+          '<p>Cuando un aspirante hable con el agente y se genere una transferencia, aquí aparecerá el resumen listo para el asesor.</p>'+
+          '<a href="../../index.html">Simular una conversación</a>'+
+        '</div>';
+      return;
+    }
+
+    var interesClass = p.interes==='Alto' ? 'alto' : (p.interes==='Bajo' ? 'bajo' : 'medio');
+
+    var html = '';
+    html += '<div class="lead"><div class="avatar">A</div><div><h1>Aspirante</h1><p>Sesión web · sin identificar</p></div></div>';
+
+    html += '<div class="grid">';
+    html += stat('Programa de interés', p.programa || 'No definido');
+    html += stat('Sede', p.sede || 'No definida');
+    html += stat('Interés', '<span class="pill '+interesClass+'">'+(p.interes||'Medio')+'</span>', true);
+    html += stat('Etapa', p.etapa || 'Exploración');
+    html += stat('Necesidad principal', p.necesidad || 'Sin especificar', false, true);
+    html += '</div>';
+
+    if(p.cita){
+      html += '<div class="section-title">Cita agendada</div>';
+      html += '<div class="appt-card">'+iconCal()+
+        '<div><strong>'+p.cita.tipo+' · '+p.cita.modalidad+'</strong><span>'+cap(p.cita.label)+' — asignada a '+p.cita.asesor+'</span></div></div>';
+    }
+
+    html += '<div class="section-title">Transcripción reciente</div>';
+    if(messages.length){
+      html += '<div class="transcript">';
+      messages.slice(-10).forEach(function(m){
+        html += '<div class="t-row '+m.role+'"><div class="t-role">'+(m.role==='user'?'Aspirante':'Agente')+'</div><div class="t-text">'+escapeHtml(m.text)+'</div></div>';
+      });
+      html += '</div>';
+    }else{
+      html += '<div class="transcript"><div class="t-row"><div class="t-text" style="color:var(--text-tertiary)">Sin mensajes registrados todavía.</div></div></div>';
+    }
+
+    content.innerHTML = html;
+  }
+
+  function stat(label, value, raw, span2){
+    return '<dl class="stat'+(span2?' span2':'')+'"><dt>'+label+'</dt><dd>'+(raw?value:escapeHtml(value))+'</dd></dl>';
+  }
+  function escapeHtml(s){ var d=document.createElement('div'); d.textContent=s; return d.innerHTML; }
+  function cap(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+
+  render();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js'); });
+  }
+</script>
+</body>
+</html>

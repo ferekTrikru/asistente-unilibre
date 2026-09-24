@@ -1,0 +1,24 @@
+# Claves y configuración local (nunca subir: tiene la API key de Resend)
+backend/.env
+
+# Entorno y cachés de Python
+backend/venv/
+__pycache__/
+*.pyc
+
+# Base vectorial y citas: cada quien las genera en su equipo
+backend/qdrant_data/
+backend/data/*.db
+
+# Archivos viejos que ya no usa el proyecto
+backend/archivo_universidad_libre/
+backend/archivo_demo/
+icons/logo.png
+
+# Herramientas locales
+.claude/
+.firebase/
+~$*
+
+# Configuración de despliegue en Firebase (no se usa en local)
+.firebaserc

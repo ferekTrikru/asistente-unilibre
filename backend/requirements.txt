@@ -1,0 +1,22 @@
+# API
+fastapi
+uvicorn[standard]
+python-dotenv
+httpx
+email-validator
+
+# RAG / LangChain
+langchain
+langchain-community
+langchain-text-splitters
+langchain-qdrant
+qdrant-client
+
+# Carga de PDFs
+pymupdf
+
+# Embeddings locales (gratis, sin cuota)
+sentence-transformers
+
+# LLM generador (local, vía Ollama)
+ollama

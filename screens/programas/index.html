@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<title>Programas de formación · Asistente Combarranquilla</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="color-scheme" content="light" />
+<link rel="manifest" href="/manifest.json" />
+<link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
+<link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Asistente Combarranquilla" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:                #ffffff;
+    --bg-well:            #e9f1e3;
+    --surface:            #f3f8ef;
+    --surface-2:          #e8f1e1;
+    --stroke:             rgba(0,90,45,.11);
+    --stroke-strong:      rgba(0,90,45,.22);
+    --text-primary:       #12301d;
+    --text-secondary:     #475e4f;
+    --text-tertiary:      #667b6d;
+    --accent:             #007a3d;
+    --accent-bright:      #15934a;
+    --accent-deep:        #005a2c;
+    --shadow-ambient:     rgba(0,122,61,.22);
+    --sun: #e0ab0e;
+    --leaf: #a0ac28;
+    --font-display:       'Nunito', 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+    --font-sans:          'Manrope', -apple-system, 'Segoe UI', sans-serif;
+  }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  html,body{ height:100%; overflow:hidden; overscroll-behavior:none; }
+  body{
+    background: var(--bg-well); color: var(--text-primary);
+    font-family: var(--font-sans); -webkit-font-smoothing: antialiased;
+  }
+  ::selection{ background: var(--accent); color:#fff; }
+  button{ font-family:inherit; }
+  a{ color:inherit; }
+
+  .stage{ position:fixed; inset:0; display:flex; align-items:center; justify-content:center;
+    background: radial-gradient(60% 45% at 50% 100%, rgba(0,122,61,.16), transparent 70%), var(--bg-well); }
+  .app{ position:relative; width:100%; max-width:432px; height:100%; max-height:940px;
+    display:flex; flex-direction:column; overflow:hidden; background: var(--bg); isolation:isolate; }
+  @media (min-width:680px){
+    .app{ height:min(92dvh, 940px); border-radius:34px;
+      box-shadow:0 0 0 1px var(--stroke), 0 40px 100px -20px rgba(18,48,29,.22), 0 0 140px -40px var(--shadow-ambient); }
+  }
+  .ambient{ position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(70% 38% at 50% 86%, rgba(160,172,40,.20), transparent 65%),
+      radial-gradient(90% 42% at 50% 106%, rgba(224,171,14,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fbfdf9 55%, #f0f6ea 100%);
+  }
+
+  .topbar{ position:relative; z-index:3; display:flex; align-items:center; gap:12px;
+    padding: max(18px, env(safe-area-inset-top)) 16px 8px; flex-shrink:0; }
+  .iconbtn{ width:38px; height:38px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    background:transparent; border:1px solid transparent; color:var(--text-secondary);
+    cursor:pointer; transition:background .18s ease, border-color .18s ease, color .18s ease; text-decoration:none; }
+  .iconbtn:hover{ background:var(--surface); border-color:var(--stroke); color:var(--text-primary); }
+  .iconbtn:active{ transform:scale(.94); }
+  .iconbtn svg{ width:19px; height:19px; }
+  .topbar h1{ flex:1; font-family:var(--font-display); font-style:italic; font-weight:800;
+    font-size:18px; text-align:center; padding-right:38px; }
+
+  .scrim{ position:absolute; inset:0; z-index:10; background:rgba(18,48,29,.28); backdrop-filter:blur(2px);
+    opacity:0; pointer-events:none; transition:opacity .25s ease; }
+  .app.drawer-open .scrim{ opacity:1; pointer-events:auto; }
+  .drawer{ position:absolute; top:0; bottom:0; left:0; z-index:11; width:78%; max-width:300px;
+    background:linear-gradient(175deg, #ffffff, #f1f7ec); border-right:1px solid var(--stroke);
+    transform:translateX(-100%); transition:transform .32s cubic-bezier(.32,.72,.24,1);
+    padding:max(20px, env(safe-area-inset-top)) 16px 16px; display:flex; flex-direction:column; gap:4px; }
+  .app.drawer-open .drawer{ transform:translateX(0); }
+  .drawer h2{ display:flex; align-items:center; gap:10px; font-family:var(--font-display); font-weight:800; font-style:italic; font-size:19px; color:var(--accent); padding:6px 10px 16px; }
+  .drawer-mark{ height:28px; width:auto; border-radius:7px; }
+  .drawer-item{ display:flex; align-items:center; gap:12px; padding:11px 10px; border-radius:11px;
+    color:var(--text-secondary); font-size:14px; font-weight:600; text-decoration:none;
+    cursor:pointer; transition:background .15s ease, color .15s ease; position:relative; }
+  .drawer-item.is-active{ color:var(--text-primary); background:var(--surface); }
+  .drawer-item:hover{ background:var(--surface); color:var(--text-primary); }
+  .drawer-item svg{ width:17px; height:17px; opacity:.8; flex-shrink:0; }
+  .drawer-sep{ height:1px; background:var(--stroke); margin:10px 4px; }
+  .drawer-foot{ margin-top:auto; padding:10px; font-size:11.5px; color:var(--text-tertiary); }
+  .drawer-item .tag{ margin-left:auto; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent-bright); background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.32); padding:2px 7px; border-radius:100px; }
+
+  .search-wrap{ position:relative; z-index:2; padding:8px 16px 4px; flex-shrink:0; }
+  .search-bar{ display:flex; align-items:center; gap:10px; background:rgba(0,90,45,.06);
+    -webkit-backdrop-filter:blur(20px) saturate(180%); backdrop-filter:blur(20px) saturate(180%);
+    border:1px solid rgba(0,90,45,.14); border-radius:100px; padding:11px 16px;
+    transition:border-color .2s ease; }
+  .search-bar:focus-within{ border-color:var(--accent); }
+  .search-bar svg{ width:16px; height:16px; color:var(--text-tertiary); flex-shrink:0; }
+  .search-bar input{ flex:1; background:none; border:none; outline:none; color:var(--text-primary);
+    font-size:14px; font-weight:500; font-family:var(--font-sans); min-width:0; }
+  .search-bar input::placeholder{ color:var(--text-tertiary); }
+
+  .filters{ position:relative; z-index:2; display:flex; gap:8px; overflow-x:auto; padding:12px 16px 4px;
+    flex-shrink:0; scrollbar-width:none; }
+  .filters::-webkit-scrollbar{ display:none; }
+  .filter-chip{ flex-shrink:0; border:1px solid var(--stroke-strong); background:rgba(0,90,45,.02);
+    color:var(--text-secondary); font-size:12px; font-weight:700; padding:8px 14px; border-radius:100px;
+    cursor:pointer; white-space:nowrap; transition:all .16s ease; }
+  .filter-chip.is-active{ background:linear-gradient(155deg, var(--accent-bright), var(--accent)); color:#fff; border-color:transparent; }
+  .filter-chip:not(.is-active):hover{ border-color:var(--accent); color:var(--text-primary); }
+
+  .list{ position:relative; z-index:2; flex:1; min-height:0; overflow-y:auto;
+    -webkit-overflow-scrolling:touch; overscroll-behavior:contain; padding:18px 18px 30px;
+    scrollbar-width:thin; scrollbar-color:rgba(21,147,74,.35) transparent; }
+  .list::-webkit-scrollbar{ width:5px; }
+  .list::-webkit-scrollbar-track{ background:transparent; }
+  .list::-webkit-scrollbar-thumb{ background:rgba(21,147,74,.35); border-radius:100px; }
+  .list::-webkit-scrollbar-thumb:hover{ background:rgba(21,147,74,.55); }
+
+  /* Programs are grouped by faculty — like a grouped table — so the list reads
+     as organised sections with real air between them, not one dense stack. */
+  .fgroup{ margin-bottom:28px; }
+  .fgroup:last-child{ margin-bottom:6px; }
+  .fgroup-label{ display:flex; align-items:baseline; gap:8px; padding:0 8px 10px; }
+  .fgroup-label strong{ font-size:11px; font-weight:800; letter-spacing:.08em; text-transform:uppercase; color:var(--text-tertiary); }
+  .fgroup-label span{ font-size:11px; font-weight:700; color:var(--text-tertiary); opacity:.6; }
+
+  .fgroup-card{ background:var(--surface); border:1px solid rgba(0,90,45,.13); border-radius:22px;
+    overflow:hidden; box-shadow:0 18px 36px -26px rgba(18,48,29,.22), inset 0 1px 0 rgba(255,255,255,.04); }
+
+  .prow-divider{ height:1px; background:var(--stroke); margin:0 18px; }
+
+  .pcard-head{ display:flex; align-items:center; gap:14px; padding:16px 18px; cursor:pointer;
+    transition:background .15s ease; }
+  .pcard-head:hover{ background:rgba(0,90,45,.025); }
+  .pcard-head:active{ background:rgba(0,90,45,.04); }
+  .pcard-icon{ width:42px; height:42px; border-radius:13px; flex-shrink:0;
+    background:linear-gradient(155deg, rgba(21,147,74,.24), rgba(0,122,61,.07));
+    border:1px solid rgba(21,147,74,.28);
+    display:flex; align-items:center; justify-content:center; color:var(--accent-bright); }
+  .pcard-icon svg{ width:19px; height:19px; }
+  .pcard-title{ flex:1; min-width:0; }
+  .pcard-title strong{ display:block; font-size:14.5px; font-weight:700; color:var(--text-primary); letter-spacing:-.01em; }
+  .pcard-title span{ display:block; font-size:12px; color:var(--text-secondary); margin-top:3px; line-height:1.4; }
+  .pcard-chev{ width:17px; height:17px; color:var(--text-tertiary); flex-shrink:0; transition:transform .3s ease, color .2s ease; }
+  .prow.is-open .pcard-chev{ transform:rotate(180deg); color:var(--accent-bright); }
+  .prow.is-open .pcard-head{ background:var(--surface-2); }
+
+  .pcard-body{ max-height:0; overflow:hidden; transition:max-height .35s ease; }
+  .prow.is-open .pcard-body{ max-height:480px; }
+  .pcard-inner{ display:flex; flex-direction:column; gap:16px; background:var(--surface-2);
+    margin:0; padding:2px 18px 20px; }
+  .pcard-inner p{ font-size:13px; color:var(--text-secondary); line-height:1.6; }
+  .badges{ display:flex; flex-wrap:wrap; gap:7px; }
+  .badge{ font-size:11px; font-weight:700; color:var(--text-secondary);
+    border:1px solid var(--stroke-strong); padding:5px 12px; border-radius:100px; }
+  .kv{ display:grid; grid-template-columns:auto 1fr; gap:10px 14px; font-size:12.5px; }
+  .kv dt{ color:var(--text-tertiary); font-weight:600; }
+  .kv dd{ color:var(--text-primary); font-weight:600; text-align:right; }
+  .pcard-actions{ display:flex; gap:10px; margin-top:2px; }
+  .pbtn{ flex:1; text-align:center; padding:12px 10px; border-radius:100px; font-size:12.5px; font-weight:700;
+    text-decoration:none; cursor:pointer; border:1px solid transparent; transition:transform .12s ease, filter .15s ease; }
+  .pbtn:active{ transform:scale(.97); }
+  .pbtn.primary{ background:linear-gradient(155deg, var(--accent-bright), var(--accent)); color:#fff;
+    box-shadow:0 8px 20px -8px rgba(0,122,61,.6); }
+  .pbtn.ghost{ background:rgba(0,90,45,.04); border-color:var(--stroke-strong); color:var(--text-primary); }
+  .pbtn:hover{ filter:brightness(1.08); }
+
+  .empty{ text-align:center; padding:60px 20px; color:var(--text-tertiary); font-size:13.5px; }
+
+  .note{ position:relative; z-index:2; flex-shrink:0; text-align:center; font-size:10.5px;
+    color:var(--text-tertiary); padding:2px 20px max(14px, env(safe-area-inset-bottom)); }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="app" id="app">
+    <div class="ambient"></div>
+    <div class="scrim" id="scrim"></div>
+    <nav class="drawer" id="drawer">
+      <h2><img class="drawer-mark" src="../../icons/combarranquilla-mark.png" alt="" />Asistente Combarranquilla</h2>
+      <a class="drawer-item" href="../../index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.5 8.5 0 0 1-11.8 7.8L4 21l1.7-5.2A8.5 8.5 0 1 1 21 11.5Z"/></svg>
+        Volver al chat
+      </a>
+      <a class="drawer-item is-active" href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
+        Programas de formación
+      </a>
+      <a class="drawer-item" href="../citas/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M8 2v4M16 2v4M3 10h18"/><path d="M8.5 15.5l1.8 1.8L15.5 13.5"/></svg>
+        Mis citas
+      </a>
+      <a class="drawer-item" href="../proceso/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20V11M12 20V4M20 20v-7"/></svg>
+        Mi proceso
+      </a>
+      <div class="drawer-sep"></div>
+      <a class="drawer-item" href="../asesor/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M19.5 20a4 4 0 0 1-4 4h-2"/></svg>
+        Vista del asesor <span class="tag">Demo</span>
+      </a>
+      <div class="drawer-foot">Combarranquilla &middot; Agente de Admisiones</div>
+    </nav>
+
+    <header class="topbar">
+      <a class="iconbtn" href="../../index.html" aria-label="Volver al chat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg>
+      </a>
+      <h1>Programas de formación</h1>
+      <button class="iconbtn" id="menuBtn" aria-label="Abrir menú">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+    </header>
+
+    <div class="search-wrap">
+      <div class="search-bar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        <input id="search" type="text" placeholder="Buscar programa, escuela o sede…" autocomplete="off" />
+      </div>
+    </div>
+
+    <div class="filters" id="filters"></div>
+    <div class="list" id="list"></div>
+
+    <p class="note">Información según la guía de servicios de Combarranquilla. Confirma valores y fechas en las sedes de atención.</p>
+  </div>
+</div>
+
+<script>
+(function(){
+  "use strict";
+  var KB_PROGRAMS = [
+    { id:'enfermeria', nombre:'Auxiliar en Enfermería', facultad:'Escuela de Salud', sedes:['Barranquilla','Sabanalarga','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad','Carné de vacunación'], costoAprox:'Desde $1.150.000 COP / semestre (afiliados cat. A)' },
+    { id:'farmacia', nombre:'Auxiliar en Servicios Farmacéuticos', facultad:'Escuela de Salud', sedes:['Barranquilla','Soledad'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)' },
+    { id:'software', nombre:'Técnico en Desarrollo de Software', facultad:'Escuela de Tecnología', sedes:['Barranquilla','Soledad','Malambo'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Tecnología. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $950.000 COP / semestre (afiliados cat. A)' },
+    { id:'administrativo', nombre:'Auxiliar Administrativo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'], modalidad:'Presencial y virtual', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $820.000 COP / semestre (afiliados cat. A)' },
+    { id:'contable', nombre:'Auxiliar Contable y Financiero', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Sabanalarga'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $850.000 COP / semestre (afiliados cat. A)' },
+    { id:'sst', nombre:'Seguridad y Salud en el Trabajo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $1.050.000 COP / semestre (afiliados cat. A)' },
+    { id:'infancia', nombre:'Atención Integral a la Primera Infancia', facultad:'Escuela de Educación y Desarrollo Social', sedes:['Barranquilla','Malambo','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Educación y Desarrollo Social.', requisitos:['Diploma de bachiller','Documento de identidad','Certificado de antecedentes'], costoAprox:'Desde $900.000 COP / semestre (afiliados cat. A)' },
+    { id:'gastronomia', nombre:'Cocina y Gastronomía', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $1.200.000 COP / semestre (afiliados cat. A)' },
+    { id:'turismo', nombre:'Servicios Turísticos y Hoteleros', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía.', requisitos:['Diploma de bachiller','Documento de identidad','Inglés básico'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)' }
+  ];
+  var SEDES = ['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'];
+
+  var app = document.getElementById('app');
+  var menuBtn = document.getElementById('menuBtn');
+  var scrim = document.getElementById('scrim');
+  menuBtn.addEventListener('click', function(){ app.classList.add('drawer-open'); });
+  scrim.addEventListener('click', function(){ app.classList.remove('drawer-open'); });
+
+  var filtersEl = document.getElementById('filters');
+  var listEl = document.getElementById('list');
+  var searchEl = document.getElementById('search');
+  var activeSede = 'Todas';
+
+  function strip(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
+
+  function renderFilters(){
+    var sedes = ['Todas'].concat(SEDES);
+    filtersEl.innerHTML = '';
+    sedes.forEach(function(s){
+      var chip = document.createElement('button');
+      chip.type = 'button';
+      chip.className = 'filter-chip' + (s===activeSede ? ' is-active' : '');
+      chip.textContent = s;
+      chip.addEventListener('click', function(){ activeSede = s; renderFilters(); renderList(); });
+      filtersEl.appendChild(chip);
+    });
+  }
+
+  var PROGRAM_ICONS = {
+    enfermeria: '<circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/>',
+    farmacia: '<rect x="3" y="9" width="18" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="m9.5 9.5 5 5"/>',
+    software: '<path d="m8 8-4 4 4 4M16 8l4 4-4 4M13.5 5l-3 14"/>',
+    administrativo: '<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/><path d="M3 12h18"/>',
+    contable: '<path d="M6 2h12v20l-3-2-3 2-3-2-3 2V2Z"/><path d="M8 7h8M8 11h8M8 15h4"/>',
+    sst: '<path d="M12 3 4 6v6c0 4.5 3.4 8.3 8 9 4.6-.7 8-4.5 8-9V6l-8-3Z"/><path d="m9 12 2 2 4-4"/>',
+    infancia: '<circle cx="12" cy="7" r="3"/><path d="M6 21v-2a6 6 0 0 1 12 0v2"/>',
+    gastronomia: '<path d="M6 13.9A4 4 0 0 1 7.5 6a5 5 0 0 1 9 0A4 4 0 0 1 18 13.9V20H6Z"/><path d="M6 17h12"/>',
+    turismo: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'
+  };
+  function iconFor(id){
+    return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+(PROGRAM_ICONS[id]||PROGRAM_ICONS.administrativo)+'</svg>';
+  }
+
+  function goAsk(question){
+    try{ localStorage.setItem('cfPendingQuestion', question); }catch(e){}
+    window.location.href = '../../index.html';
+  }
+
+  var FACULTY_ORDER = ['Escuela de Salud','Escuela de Tecnología','Escuela de Gestión Empresarial','Escuela de Educación y Desarrollo Social','Escuela de Turismo y Gastronomía'];
+  var openId = null;
+
+  function buildRow(p){
+    var row = document.createElement('div');
+    row.className = 'prow' + (openId===p.id ? ' is-open' : '');
+
+    var head = document.createElement('div');
+    head.className = 'pcard-head';
+    head.innerHTML =
+      '<div class="pcard-icon">'+iconFor(p.id)+'</div>'+
+      '<div class="pcard-title"><strong>'+p.nombre+'</strong><span>'+p.modalidad+' · '+p.duracion+'</span></div>'+
+      '<svg class="pcard-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+    head.addEventListener('click', function(){
+      openId = (openId===p.id) ? null : p.id;
+      renderList();
+    });
+    row.appendChild(head);
+
+    var body = document.createElement('div');
+    body.className = 'pcard-body';
+    var inner = document.createElement('div');
+    inner.className = 'pcard-inner';
+    inner.innerHTML =
+      '<p>'+p.resumen+'</p>'+
+      '<div class="badges">'+p.sedes.map(function(s){ return '<span class="badge">'+s+'</span>'; }).join('')+'</div>'+
+      '<dl class="kv">'+
+        '<dt>Modalidad</dt><dd>'+p.modalidad+'</dd>'+
+        '<dt>Duración</dt><dd>'+p.duracion+'</dd>'+
+        '<dt>Valor aprox.</dt><dd>'+p.costoAprox+'</dd>'+
+        '<dt>Requisitos</dt><dd>'+p.requisitos.join(', ')+'</dd>'+
+      '</dl>'+
+      '<div class="pcard-actions">'+
+        '<button type="button" class="pbtn ghost" data-act="ask">Preguntar al asistente</button>'+
+        '<button type="button" class="pbtn primary" data-act="schedule">Agendar cita</button>'+
+      '</div>';
+    body.appendChild(inner);
+    row.appendChild(body);
+
+    inner.querySelector('[data-act="ask"]').addEventListener('click', function(){
+      goAsk('Cuéntame más sobre '+p.nombre);
+    });
+    inner.querySelector('[data-act="schedule"]').addEventListener('click', function(){
+      goAsk('Quiero agendar una cita para conocer más sobre '+p.nombre);
+    });
+
+    return row;
+  }
+
+  function renderList(){
+    var q = strip(searchEl.value);
+    var items = KB_PROGRAMS.filter(function(p){
+      if(activeSede!=='Todas' && p.sedes.indexOf(activeSede)===-1) return false;
+      if(!q) return true;
+      return strip(p.nombre).indexOf(q)>-1 || strip(p.facultad).indexOf(q)>-1;
+    });
+
+    listEl.innerHTML = '';
+    if(!items.length){
+      var e = document.createElement('div');
+      e.className = 'empty';
+      e.textContent = 'No encontré programas con esos filtros.';
+      listEl.appendChild(e);
+      return;
+    }
+
+    FACULTY_ORDER.forEach(function(facultad){
+      var progs = items.filter(function(p){ return p.facultad===facultad; });
+      if(!progs.length) return;
+
+      var group = document.createElement('div');
+      group.className = 'fgroup';
+
+      var label = document.createElement('div');
+      label.className = 'fgroup-label';
+      label.innerHTML = '<strong>'+facultad+'</strong><span>'+progs.length+' programa'+(progs.length>1?'s':'')+'</span>';
+      group.appendChild(label);
+
+      var card = document.createElement('div');
+      card.className = 'fgroup-card';
+      progs.forEach(function(p, i){
+        card.appendChild(buildRow(p));
+        if(i < progs.length-1){
+          var div = document.createElement('div');
+          div.className = 'prow-divider';
+          card.appendChild(div);
+        }
+      });
+      group.appendChild(card);
+      listEl.appendChild(group);
+    });
+  }
+
+  searchEl.addEventListener('input', renderList);
+  renderFilters();
+  renderList();
+})();
+</script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function(){ navigator.serviceWorker.register('/sw.js'); });
+  }
+</script>
+</body>
+</html>
