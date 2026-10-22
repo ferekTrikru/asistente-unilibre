@@ -1,3 +1,5 @@
+import logging
+
 import httpx
 import ollama
 
@@ -43,6 +45,7 @@ def generate(prompt: str) -> str:
         )
     except (httpx.ConnectError, ConnectionError, ollama.ResponseError) as exc:
         raise _friendly_error(exc) from exc
+    _warn_if_truncated(response.prompt_eval_count)
     return (response.response or "").strip()
 
 
@@ -55,8 +58,20 @@ def generate_stream(prompt: str):
         ):
             if part.response:
                 yield part.response
+            if part.done:
+                _warn_if_truncated(part.prompt_eval_count)
     except (httpx.ConnectError, ConnectionError, ollama.ResponseError) as exc:
         raise _friendly_error(exc) from exc
+
+
+def _warn_if_truncated(prompt_tokens: int | None) -> None:
+    """Ollama recorta en silencio el inicio del prompt (las instrucciones) cuando no cabe
+    en num_ctx. Avisa en el log si el prompt quedó en el límite."""
+    limit = _OPTIONS["num_ctx"] - _OPTIONS["num_predict"]
+    if prompt_tokens and prompt_tokens >= limit:
+        logging.getLogger("uvicorn.error").warning(
+            "Prompt de %s tokens: llega al límite de %s y Ollama pudo recortar las instrucciones. "
+            "Baja MAX_CONTEXT_CHARS en rag_engine.py.", prompt_tokens, limit)
 
 
 def warm_up() -> None:

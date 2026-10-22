@@ -1,9 +1,10 @@
 import re
+import unicodedata
 
 TABULAR_QUERY_TERMS = [
-    "semana", "fecha", "día", "cronograma", "schedule", "horario",
+    "semana", "fecha", "día", "cronograma", "calendario", "horario",
     "frecuencia", "cuota", "valor", "costo", "precio", "tiempo",
-    "plazo", "tabla", "cuadro", "convocatoria", "cuándo", "when",
+    "plazo", "tabla", "cuadro", "convocatoria", "cuándo", "hasta cuándo",
 ]
 
 CONCEPTUAL_QUERY_TERMS = [
@@ -52,31 +53,62 @@ def detect_query_type(query_text: str) -> str:
 
 
 MAX_RESULTS = 8
+# Candidatos que trae la búsqueda semántica antes de reordenar con palabras clave.
+CANDIDATES = 24
+# Peso de las palabras clave frente al parecido semántico. El modelo de embeddings es
+# pequeño y confunde fichas de programas parecidas; nombrar el programa ("Derecho",
+# "Fisioterapia") debe pesar.
+KEYWORD_WEIGHT = 0.25
+HEADING_BONUS = 0.12
+
+_STOPWORDS = {
+    "cuanto", "cuanta", "cuantos", "cuantas", "cuesta", "cuestan", "valor", "tiene", "tienen",
+    "puedo", "quiero", "saber", "sobre", "para", "esta", "estan", "como", "donde", "cuando",
+    "hasta", "desde", "tengo", "hacer", "universidad", "libre", "barranquilla", "carrera",
+    "programa", "estudiar", "necesito", "alguna", "algun", "ustedes", "seria", "favor",
+}
+
+
+def _normalize(text: str) -> str:
+    text = unicodedata.normalize("NFD", text.lower())
+    return "".join(c for c in text if unicodedata.category(c) != "Mn")
+
+
+def _keywords(query_text: str) -> list[str]:
+    words = re.findall(r"[a-z0-9]+", _normalize(query_text))
+    return [w for w in words if len(w) >= 4 and w not in _STOPWORDS]
+
+
+def _keyword_score(keywords: list[str], doc) -> tuple[float, float]:
+    """(fracción de palabras clave presentes en el fragmento, bono si están en su título)."""
+    if not keywords:
+        return 0.0, 0.0
+    text = _normalize(doc.page_content)
+    heading = text.split("\n", 1)[0] if text.startswith("[") else ""
+    present = [w for w in keywords if w in text]
+    in_heading = any(w in heading for w in keywords)
+    return len(present) / len(keywords), (HEADING_BONUS if in_heading else 0.0)
 
 
 def smart_search(query_text: str, vector_store):
-    """Búsqueda adaptativa: ajusta k/threshold y prioriza tablas u horarios según la pregunta.
-    Devuelve pocos fragmentos (los más relevantes) para que la respuesta final sea corta y citable."""
+    """Búsqueda híbrida: trae candidatos por parecido semántico y los reordena sumando
+    coincidencia de palabras clave (con bono si aparecen en el título de la sección del
+    fragmento) y el tipo de contenido. Devuelve pocos fragmentos para que la respuesta
+    sea corta y citable."""
     query_type = detect_query_type(query_text)
+    threshold = {"conceptual": 0.3, "tabular": 0.2}.get(query_type, 0.25)
 
-    if query_type == "conceptual":
-        k, threshold = 10, 0.3
-    elif query_type == "tabular":
-        k, threshold = 12, 0.2
-    else:
-        k, threshold = 10, 0.25
-
-    results = vector_store.similarity_search_with_relevance_scores(
-        query_text, k=k, score_threshold=threshold
-    )
-
-    if not results:
+    results = vector_store.similarity_search_with_relevance_scores(query_text, k=CANDIDATES)
+    # Si ni el mejor candidato supera el umbral, no hay nada relevante en los documentos.
+    if not results or results[0][1] < threshold:
         return []
 
+    keywords = _keywords(query_text)
     boosted = []
     for doc, score in results:
         content_type = doc.metadata.get("content_type", "text")
-        final_score = score
+        coverage, heading_bonus = _keyword_score(keywords, doc)
+        final_score = score + KEYWORD_WEIGHT * coverage + heading_bonus
 
         if query_type == "tabular" and content_type in ("table", "schedule"):
             final_score += 0.2

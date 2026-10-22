@@ -1,0 +1,242 @@
+{
+  "_como_usar": "Cada caso: 'debe' = textos que deben aparecer en la respuesta (todos; 'a|b' acepta cualquiera de los dos), 'no_debe' = textos prohibidos, 'sin_respuesta' = true si lo correcto es decir que no está en los documentos. Las comparaciones ignoran mayúsculas y tildes. Correr con: python evaluate.py (con el backend encendido).",
+  "casos": [
+    {
+      "pregunta": "¿Cuánto cuesta la matrícula de Medicina?",
+      "debe": [
+        "21.526.000"
+      ]
+    },
+    {
+      "pregunta": "¿Cuánto cuesta la matrícula de Derecho?",
+      "debe": [
+        "5.910.000"
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es el valor del semestre de Ingeniería de Sistemas?",
+      "debe": [
+        "5.418.000"
+      ]
+    },
+    {
+      "pregunta": "¿Cuánto vale Contaduría Pública?",
+      "debe": [
+        "3.986.000"
+      ]
+    },
+    {
+      "pregunta": "¿Cuánto cuesta Bacteriología?",
+      "debe": [
+        "7.962.000"
+      ]
+    },
+    {
+      "pregunta": "¿Cuánto dura la carrera de Medicina?",
+      "debe": [
+        "12 semestres|doce semestres"
+      ]
+    },
+    {
+      "pregunta": "¿Cuántos semestres dura Derecho?",
+      "debe": [
+        "10 semestres|diez semestres"
+      ]
+    },
+    {
+      "pregunta": "¿Cuánto dura Bacteriología?",
+      "debe": [
+        "9 semestres|nueve semestres"
+      ]
+    },
+    {
+      "pregunta": "¿Qué título obtengo si estudio Instrumentación Quirúrgica?",
+      "debe": [
+        "instrumentador"
+      ]
+    },
+    {
+      "pregunta": "¿Qué carreras tienen jornada nocturna?",
+      "debe": [
+        "derecho",
+        "contaduria",
+        "industrial",
+        "negocios internacionales",
+        "logistica"
+      ],
+      "no_debe": [
+        "medicina"
+      ]
+    },
+    {
+      "pregunta": "¿Ingeniería de Sistemas tiene jornada nocturna?",
+      "debe": [
+        "no tiene jornada nocturna|solo jornada diurna|unicamente diurna|diurna"
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es el puntaje de Saber 11 para entrar directo a Medicina?",
+      "debe": [
+        "330"
+      ]
+    },
+    {
+      "pregunta": "¿Cuándo publican la lista de admitidos de Medicina?",
+      "debe": [
+        "6 de noviembre"
+      ]
+    },
+    {
+      "pregunta": "¿Hasta cuándo hay entrevistas para Fisioterapia?",
+      "debe": [
+        "20 de noviembre"
+      ],
+      "no_debe": [
+        "30 de octubre",
+        "2 de diciembre"
+      ]
+    },
+    {
+      "pregunta": "¿Hasta cuándo puedo pagar la matrícula de Bacteriología?",
+      "debe": [
+        "27 de noviembre"
+      ],
+      "no_debe": [
+        "2 de diciembre"
+      ]
+    },
+    {
+      "pregunta": "¿Qué documentos necesito para inscribirme a Medicina?",
+      "debe": [
+        "saber 11",
+        "identidad"
+      ]
+    },
+    {
+      "pregunta": "¿La inscripción a pregrado tiene costo?",
+      "debe": [
+        "gratuita|gratis|no tiene costo"
+      ]
+    },
+    {
+      "pregunta": "¿Puedo combinar el descuento de hermanos con el de mayores de 25?",
+      "debe": [
+        "no son acumulables|no se pueden acumular|no puedes combinar"
+      ]
+    },
+    {
+      "pregunta": "Vengo del SENA, ¿tengo algún beneficio?",
+      "debe": [
+        "20"
+      ]
+    },
+    {
+      "pregunta": "¿Qué descuento hay para mayores de 25 años?",
+      "debe": [
+        "20",
+        "nocturn"
+      ]
+    },
+    {
+      "pregunta": "¿Qué necesito para una transferencia externa?",
+      "debe": [
+        "3.5|3,5"
+      ]
+    },
+    {
+      "pregunta": "¿Cómo puedo financiar la carrera?",
+      "debe": [
+        "icetex"
+      ]
+    },
+    {
+      "pregunta": "¿Hay carreras virtuales?",
+      "debe": [
+        "contaduria"
+      ]
+    },
+    {
+      "pregunta": "¿Dónde queda la sede principal en Barranquilla?",
+      "debe": [
+        "km 7|kilometro 7"
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es el teléfono de la Universidad en Barranquilla?",
+      "debe": [
+        "385 1057|3851057"
+      ]
+    },
+    {
+      "pregunta": "¿Cuál es el correo de Ingeniería de Sistemas?",
+      "debe": [
+        "ing_sistemasbaq@unilibre.edu.co"
+      ]
+    },
+    {
+      "pregunta": "¿Qué maestrías ofrecen en Barranquilla?",
+      "debe": [
+        "derecho"
+      ]
+    },
+    {
+      "pregunta": "¿La Universidad Libre es pública o privada?",
+      "debe": [
+        "privada"
+      ]
+    },
+    {
+      "pregunta": "¿Puedo hacer un semestre de intercambio en el exterior?",
+      "debe": [
+        "movilidad|intercambio"
+      ]
+    },
+    {
+      "pregunta": "¿Tienen programa de Psicología en Barranquilla?",
+      "no_debe": [
+        "si, tenemos",
+        "si tenemos psicologia en barranquilla"
+      ]
+    },
+    {
+      "pregunta": "¿Tienen carrera de Arquitectura?",
+      "sin_respuesta": true
+    },
+    {
+      "pregunta": "¿Cuál es el horario de la cafetería?",
+      "sin_respuesta": true
+    },
+    {
+      "pregunta": "¿Y de noche?",
+      "historial": [
+        {
+          "role": "user",
+          "text": "¿Cuánto cuesta la matrícula de Derecho?"
+        },
+        {
+          "role": "bot",
+          "text": "La matrícula de Derecho cuesta $5.910.000 COP por semestre en 2026."
+        }
+      ],
+      "debe": [
+        "nocturn|noche"
+      ]
+    },
+    {
+      "pregunta": "¿Y cuánto dura?",
+      "historial": [
+        {
+          "role": "user",
+          "text": "Me interesa Fisioterapia"
+        },
+        {
+          "role": "bot",
+          "text": "Fisioterapia es un programa presencial en la Sede Principal."
+        }
+      ],
+      "debe": [
+        "8 semestres|ocho semestres"
+      ]
+    }
+  ]
+}

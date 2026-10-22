@@ -15,7 +15,7 @@ VAPI_CALL_URL = "https://api.vapi.ai/call"
 
 def _first_message(appointment: dict) -> str:
     return (
-        f"Hola, te llamo del área de admisiones de Combarranquilla para confirmar "
+        f"Hola, te llamo del área de admisiones de la Universidad Libre, seccional Barranquilla, para confirmar "
         f"tu cita de {appointment['tipo']} el {appointment['slot_label']}. "
         f"¿Puedes confirmarme si asistirás?"
     )

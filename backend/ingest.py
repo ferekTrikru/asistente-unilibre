@@ -119,15 +119,56 @@ def split_documents(documents):
         if page_starts is None:
             chunks.extend(splitter.split_documents([doc]))
             continue
-        # PDF unido: cada fragmento se etiqueta con la página donde empieza.
+        # PDF unido: cada fragmento se etiqueta con la página donde empieza y lleva al
+        # inicio la ruta de títulos de su sección. Sin esa ruta, un fragmento como
+        # "Valor de matrícula 2026: $5.910.000" no dice de qué programa es y la búsqueda
+        # no lo asocia con "¿cuánto cuesta Derecho?".
+        headings = _find_headings(doc.page_content)
         offset = 0
         for piece in splitter.split_text(doc.page_content):
             start = doc.page_content.find(piece[:200], offset)
             if start >= 0:
                 offset = start + 1
             page = max(bisect.bisect_right(page_starts, max(start, 0)) - 1, 0)
-            chunks.append(Document(page_content=piece, metadata={**doc.metadata, "page": page}))
+            path = _heading_path(headings, max(start, 0))
+            content = f"[{path}]\n{piece}" if path and not piece.startswith(path.split(" > ")[-1]) else piece
+            chunks.append(Document(page_content=content, metadata={**doc.metadata, "page": page}))
     return enrich_metadata(chunks)
+
+
+# Títulos en los PDF de la Universidad: secciones numeradas ("13. Oferta de pregrado ...")
+# y fichas de programa ("Derecho — Barranquilla").
+_MAJOR_HEADING = re.compile(r"^\d{1,2}\.\s+[A-ZÁÉÍÓÚÑ][^\n]{3,90}$")
+_MINOR_HEADING = re.compile(
+    r"^[A-ZÁÉÍÓÚÑ][^\n]{2,80}\s[—–-]\s(Barranquilla|Bogotá|Cali|Pereira|Cúcuta|Cartagena|El Socorro)$"
+    r"|^[A-ZÁÉÍÓÚÑ][^\n]{2,140}\(período \d{4}-\d\)$"
+)
+
+
+def _find_headings(text: str) -> list[tuple[int, str, str]]:
+    """Lista de (posición, nivel, título) en el orden del texto."""
+    found, pos = [], 0
+    for line in text.split("\n"):
+        stripped = line.strip()
+        if _MAJOR_HEADING.match(stripped):
+            found.append((pos, "major", stripped))
+        elif _MINOR_HEADING.match(stripped):
+            found.append((pos, "minor", stripped))
+        pos += len(line) + 1
+    return found
+
+
+def _heading_path(headings, position: int) -> str:
+    """Ruta 'Sección > Subsección' vigente en esa posición del texto."""
+    major = minor = None
+    for pos, level, title in headings:
+        if pos > position:
+            break
+        if level == "major":
+            major, minor = title, None
+        else:
+            minor = title
+    return " > ".join(t for t in (major, minor) if t)
 
 
 def main():

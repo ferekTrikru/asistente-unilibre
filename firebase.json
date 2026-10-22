@@ -8,7 +8,14 @@
       "**/.*",
       "**/node_modules/**",
       "README.md",
-      "icons/logo.png"
+      "icons/logo.png",
+      "backend/**",
+      "**/*.db",
+      "**/*.py",
+      "**/*.pdf",
+      "**/*.docx",
+      "**/venv/**",
+      "**/qdrant_data/**"
     ],
     "cleanUrls": false,
     "trailingSlash": false,

@@ -1,0 +1,16 @@
+{
+  "_nota": "Agenda de asesores de admisiones (datos de demostración: reemplazar por los asesores reales). Horario en hora de Colombia. 'tipos' son los tipos de atención que ofrece el chat.",
+  "duracion_minutos": 30,
+  "dias_habiles": [0, 1, 2, 3, 4],
+  "franjas": ["08:00", "08:30", "09:00", "09:30", "10:00", "10:30", "11:00", "11:30",
+              "14:00", "14:30", "15:00", "15:30", "16:00", "16:30", "17:00", "17:30"],
+  "anticipacion_minima_horas": 2,
+  "dias_hacia_adelante": 14,
+  "asesores": [
+    { "nombre": "Laura Méndez", "tipos": ["Admisiones", "Transferencias y homologaciones"] },
+    { "nombre": "Andrés Rojas", "tipos": ["Admisiones", "Asesoría académica"] },
+    { "nombre": "Camila Torres", "tipos": ["Información financiera", "Becas y descuentos"] },
+    { "nombre": "Diego Salazar", "tipos": ["Orientación vocacional", "Asesoría académica"] },
+    { "nombre": "Mónica Herrera", "tipos": ["Transferencias y homologaciones", "Becas y descuentos"] }
+  ]
+}
