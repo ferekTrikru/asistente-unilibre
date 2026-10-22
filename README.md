@@ -1,44 +1,19 @@
-# Asistente Combarranquilla — Agente inteligente de admisiones
+# Asistente Unilibre — Agente inteligente de admisiones
 
-Chat con IA para **Combarranquilla** (Caja de Compensación Familiar). El asistente:
+Asistente de admisiones de la **Universidad Libre, seccional Barranquilla**. El asistente:
 
-- **Responde preguntas** sobre afiliación, categorías, subsidios, programas de formación, crédito,
-  recreación y trámites, usando **solo** la guía oficial
-  [`backend/data/Guia_Combarranquilla_RAG.docx`](backend/data/Guia_Combarranquilla_RAG.docx).
-  Si un dato no está en la guía, lo dice y ofrece agendar una cita; no inventa.
-- **Agenda citas** con un asesor (tipo de atención → virtual o presencial → horario → correo).
-- **Envía un correo de confirmación** de la cita.
-- **Arma un resumen para el asesor** con el contexto de la conversación ("Vista del asesor").
+- **Responde preguntas** sobre carreras, valores de matrícula, jornadas, inscripciones,
+  calendario, descuentos, becas y financiación, usando **solo** los documentos de la Universidad
+  que están en `backend/data/`. Si un dato no está, lo dice y ofrece agendar una cita; no inventa.
+  Entiende preguntas de seguimiento ("¿y de noche?") y sabe qué plazos ya pasaron.
+- **Agenda citas reales** con un asesor: ofrece las franjas libres de la agenda
+  (`backend/config/advisors.json`), evita choques y envía correo de confirmación.
+- **Llamada de voz**: se le puede hablar al asistente y responde en voz alta (Chrome o Edge).
+- **Mis citas**: el aspirante cancela o reprograma su cita sin crear cuenta.
+- **Panel del asesor** (con clave): todas las citas con la conversación del chat, cambio de
+  estado (asistió, admitido…) y la lista de **preguntas que el agente no supo responder**.
 
-Todo corre **en tu computador**: la IA (Ollama), la búsqueda en la guía y la página.
-
----
-
-## ⚠️ Importante: a quién le llega el correo de confirmación
-
-El envío de correos usa una cuenta de **[Resend](https://resend.com)** en **modo de prueba**.
-En ese modo Resend **solo entrega correos a la dirección con la que se creó la cuenta**.
-
-| Cómo configures `backend/.env` | Qué pasa al agendar una cita |
-|---|---|
-| **Sin clave de correo** (`RESEND_API_KEY` vacío) | La cita se guarda y el chat dice *"Modo demo"*. **No se envía ningún correo.** Todo lo demás funciona. |
-| **Con la clave de Resend del proyecto** (pídela por privado a quien administra el proyecto) | El correo se envía, pero **solo llega a `ferekromero9a@gmail.com`**, el correo con el que se creó la cuenta de Resend. Si escribes otro correo en el chat, Resend lo rechaza y el chat dice que no pudo enviarlo. |
-| **Con tu propia cuenta de Resend** (gratis, ver abajo) | El correo llega **a tu propio correo** (el que usaste para crear la cuenta de Resend). |
-
-> Para ver el flujo con correo usando la clave del proyecto, escribe
-> **`ferekromero9a@gmail.com`** cuando el chat te pida el correo.
-
-La clave **no está en este repositorio** a propósito: el archivo `backend/.env` está excluido
-de Git para que nadie pueda usar la cuenta de correo sin permiso.
-
-### Usar tu propia cuenta de Resend (para que el correo te llegue a ti)
-1. Crea una cuenta gratis en https://resend.com con tu correo.
-2. En el panel, ve a **API Keys → Create API Key** y copia la clave (empieza por `re_`).
-3. Pégala en `backend/.env`: `RESEND_API_KEY=re_...`
-4. Reinicia el backend. Al agendar una cita, escribe **el correo con el que creaste la cuenta**.
-
-(Otra opción es usar tu Gmail con una "contraseña de aplicación": llena `SMTP_USER` y
-`SMTP_APP_PASSWORD` en `backend/.env`. Así el correo puede llegar a cualquier dirección.)
+Todo corre **en tu computador**: la IA (Ollama), la búsqueda en los documentos y la página.
 
 ---
 
@@ -49,94 +24,136 @@ de Git para que nadie pueda usar la cuenta de correo sin permiso.
 | [Python](https://www.python.org/downloads/) | 3.11 (recomendado) | Backend |
 | [Ollama](https://ollama.com/download) | cualquiera reciente | La IA que redacta las respuestas |
 | [Git](https://git-scm.com/downloads) | cualquiera | Descargar el proyecto |
+| Google Chrome o Microsoft Edge | reciente | Llamada de voz y dictado (Brave los bloquea) |
 
-- **Espacio en disco:** unos 6 GB (el modelo `llama3.1:8b` pesa ~4,7 GB y el modelo de búsqueda ~0,5 GB).
-- **Memoria:** 8 GB de RAM como mínimo; con 16 GB va más fluido.
-- Se necesita internet solo la primera vez, para descargar los modelos.
+- **Espacio en disco:** unos 6 GB (el modelo `llama3.1:8b` pesa ~4,7 GB y el de búsqueda ~0,5 GB).
+- **Memoria:** 16 GB de RAM recomendados. Con una tarjeta gráfica (NVIDIA, 6 GB o más) las
+  respuestas tardan 6–13 s; solo con procesador, bastante más.
+- Se necesita internet la primera vez (descarga de modelos) y para el reconocimiento de voz.
 
 ---
 
 ## Instalación (una sola vez)
 
-Los comandos son para **Windows** (PowerShell o CMD). En Mac/Linux, cambia
-`venv\Scripts\python.exe` por `venv/bin/python` y `copy` por `cp`.
+Los comandos son para **Windows**. En Mac/Linux, cambia `venv\Scripts\python.exe` por
+`venv/bin/python` y `copy` por `cp`.
 
-### 1. Descargar el proyecto
+### 1. Descargar el proyecto y el modelo de IA
 ```bash
 git clone <URL-de-este-repositorio>
 cd <nombre-de-la-carpeta>
-```
-
-### 2. Descargar el modelo de IA
-Abre la app de **Ollama** y luego:
-```bash
 ollama pull llama3.1:8b
 ```
 
-### 3. Preparar el backend
+### 2. Preparar el backend
 ```bash
 cd backend
 python -m venv venv
 venv\Scripts\python.exe -m pip install -r requirements.txt
 copy .env.example .env
 ```
-Si quieres correos, edita `backend/.env` según la sección
-[a quién le llega el correo](#️-importante-a-quién-le-llega-el-correo-de-confirmación).
-Si no, déjalo así y funcionará en modo demo.
+Abre `backend/.env` y completa al menos **`ADMIN_API_KEY`** (la clave del panel del asesor).
+Genera una con:
+```bash
+venv\Scripts\python.exe -c "import secrets; print(secrets.token_urlsafe(18))"
+```
+El correo y las llamadas de Vapi son opcionales: sin sus claves funcionan en **modo demo**
+(ver [correo](#correo-de-confirmación)).
 
-### 4. Cargar la guía de Combarranquilla en la base de búsqueda
-Todavía dentro de `backend`:
+### 3. Cargar los documentos de la Universidad
+Copia los PDF de la Universidad Libre en `backend/data/` (no vienen en el repositorio) y, dentro
+de `backend`:
 ```bash
 venv\Scripts\python.exe ingest.py --reset
 ```
-Debe terminar con `1 documento(s) -> 73 fragmento(s)` y `Listo.`
-(La primera vez descarga el modelo de búsqueda; tarda unos minutos.)
+Debe terminar con `N documento(s) -> M fragmento(s)` y `Listo.`
 
 ---
 
 ## Cómo encenderlo (cada vez que lo uses)
 
-Necesitas **3 cosas abiertas**:
-
 1. **Ollama**: abre la app (queda en la bandeja del sistema).
-2. **Backend**: en una terminal, dentro de `backend`:
+2. **Backend** — en una terminal, dentro de `backend`:
    ```bash
    venv\Scripts\python.exe -m uvicorn app.main:app --port 8000
    ```
-   Déjala abierta. Comprueba en el navegador: http://localhost:8000/health → `{"status":"ok"}`
-3. **Página**: en **otra** terminal, en la carpeta principal del proyecto:
+   Espera el mensaje `Precarga lista` (carga el modelo para que la primera pregunta sea rápida).
+3. **Página** — en **otra** terminal, en la carpeta principal:
    ```bash
    python -m http.server 5000
    ```
-   Abre **http://localhost:5000**
-
-> Usa el puerto **5000**: el backend solo acepta peticiones de `localhost:5000` y `localhost:8080`
-> (configurable en `CORS_ORIGINS` dentro de `backend/.env`).
+   Abre **http://localhost:5000** (en Chrome o Edge si vas a usar la voz).
 
 ### Prueba rápida
-1. Pregunta: *"¿Qué requisitos pide el subsidio de vivienda?"*. Responde con los requisitos
-   de la guía y muestra la fuente abajo.
-2. Escribe: *"Quiero hablar con un asesor sobre el subsidio de vivienda"*.
-3. Elige **Afiliación y subsidios → Virtual →** un horario.
-4. Escribe el correo (ver la [tabla de correo](#️-importante-a-quién-le-llega-el-correo-de-confirmación)).
-5. Revisa **Mis citas** y **Vista del asesor** en el menú.
-
-La primera respuesta puede tardar 20–30 s mientras Ollama carga el modelo; las siguientes, unos 5–15 s.
+1. Pregunta *"¿Cuánto cuesta la matrícula de Derecho?"* y luego *"¿Y tiene jornada nocturna?"*.
+2. Escribe *"Quiero agendar una cita"* → **Admisiones → Virtual →** un horario → tu correo.
+3. Abre **Mis citas** (menú) y reprograma la cita.
+4. Abre **Panel del asesor** (menú), entra con tu `ADMIN_API_KEY` y marca la cita como **Admitido**.
+5. Abre **Mi proceso**: debe estar en la etapa **Admisión**.
+6. Toca el teléfono del encabezado para **llamar al asistente** por voz.
 
 ---
 
 ## Actualizar la información que responde
 
-1. Edita la guía de Word [`backend/data/Guia_Combarranquilla_RAG.docx`](backend/data/Guia_Combarranquilla_RAG.docx)
-   (o agrega más `.docx`, `.pdf`, `.md` o `.txt` en `backend/data/`).
-   Usa los estilos **Título 1, 2 y 3**: el asistente divide la guía por títulos.
-2. **Detén el backend** (Ctrl + C). La base no se puede recargar mientras está abierto.
-3. En `backend`: `venv\Scripts\python.exe ingest.py --reset`
-4. Vuelve a encender el backend.
+1. Cambia o agrega documentos en `backend/data/` (`.pdf`, `.docx`, `.md` o `.txt`). En los PDF,
+   los títulos tipo *"13. Oferta de pregrado…"* y *"Derecho — Barranquilla"* se usan para que
+   cada fragmento sepa a qué sección pertenece.
+2. Si cambia la oferta de programas (valores, jornadas, fechas), actualiza también:
+   - `backend/config/domain_knowledge.json` → `official_facts` (la ficha que el agente usa siempre)
+   - `js/programas-unilibre.js` (lo que muestra la pantalla **Programas** y el chat)
+3. **Detén el backend** (Ctrl + C): la base no se puede recargar mientras está abierto.
+4. En `backend`: `venv\Scripts\python.exe ingest.py --reset`
+5. Enciende el backend y corre el banco de pruebas (abajo).
 
-> El catálogo de la pantalla **Programas de formación** está escrito en el código
-> (`index.html` y `screens/programas/index.html`, variable `KB_PROGRAMS`). Si cambian los
-> programas, sedes o precios en la guía, hay que actualizarlo también ahí.
+> El **Panel del asesor → Sin respuesta** muestra lo que los aspirantes preguntaron y el agente no
+> encontró: es la lista de lo que falta agregar a los documentos.
+
+---
+
+## Banco de pruebas
+
+`backend/tests/preguntas_evaluacion.json` tiene 34 preguntas con lo que la respuesta debe (y no
+debe) decir. Con el backend encendido, dentro de `backend`:
+```bash
+venv\Scripts\python.exe evaluate.py --solo-fallas
+```
+Córrelo después de cambiar documentos, el prompt o la búsqueda: si el puntaje baja, el cambio
+rompió algo. Estado actual: **34/34**.
+
+---
+
+## Correo de confirmación
+
+El correo se envía con Gmail (SMTP) o con [Resend](https://resend.com), según `backend/.env`:
+
+| Configuración | Resultado |
+|---|---|
+| Sin claves | La cita se guarda y el chat dice *"Modo demo"*. No se envía correo. |
+| `SMTP_USER` + `SMTP_APP_PASSWORD` (Gmail con *contraseña de aplicación*) | Llega a cualquier dirección. |
+| `RESEND_API_KEY` (cuenta gratuita) | En modo de prueba, Resend **solo entrega al correo con que se creó la cuenta**; a cualquier otro lo rechaza y el chat avisa que no pudo enviarlo. |
+
+Se envía correo al confirmar, reprogramar y cancelar una cita.
+
+---
+
+## Seguridad
+
+- `backend/.env` (claves) y `backend/data/*.db` (datos de aspirantes) **nunca** se suben a Git ni a
+  Firebase (`firebase.json` excluye todo `backend/`).
+- El panel del asesor y sus rutas (`/admin/*`) exigen `ADMIN_API_KEY`.
+- Las rutas públicas tienen un límite de peticiones por minuto (`RATE_LIMIT_PER_MINUTE`).
+- Cancelar, reprogramar o pedir la llamada de una cita exige el código que recibe quien la agendó.
+- El webhook de Vapi exige `VAPI_WEBHOOK_SECRET`.
+
+---
+
+## Publicar en internet (pendiente de decisión)
+
+La página es estática y se publica con Firebase Hosting (`firebase deploy`). El backend necesita
+un servidor con **Ollama y GPU**, o cambiar la IA a un modelo por API. Al desplegarlo:
+1. Pon su URL pública en `js/config.js` (`PRODUCTION_BACKEND_URL`).
+2. Agrega el dominio de la página a `CORS_ORIGINS` en `backend/.env`.
 
 ---
 
@@ -144,36 +161,42 @@ La primera respuesta puede tardar 20–30 s mientras Ollama carga el modelo; las
 
 | Síntoma | Solución |
 |---|---|
-| El chat siempre ofrece agendar cita y nunca responde con la guía | El backend o Ollama están apagados. Revisa http://localhost:8000/health y que Ollama esté abierto. |
-| `No se pudo conectar con Ollama` en la terminal del backend | Abre la app de Ollama (o ejecuta `ollama serve`). |
+| El chat siempre ofrece agendar cita y nunca responde con los documentos | El backend u Ollama están apagados. Revisa http://127.0.0.1:8000/health y que Ollama esté abierto. |
+| `No se pudo conectar con Ollama` | Abre la app de Ollama (o `ollama serve`). |
 | `El modelo 'llama3.1:8b' no está descargado` | `ollama pull llama3.1:8b` |
-| "Todavía no hay documentos cargados" | Ejecuta el paso 4 (`ingest.py --reset`). |
-| "No pude enviarte el correo de confirmación" | Estás usando la clave de Resend del proyecto con un correo distinto a `ferekromero9a@gmail.com`. Revisa la [tabla de correo](#️-importante-a-quién-le-llega-el-correo-de-confirmación). |
-| El chat no conecta con el backend (error de CORS en la consola) | Abre la página en `http://localhost:5000`, no abriendo el archivo `index.html` directamente. |
-| `ingest.py` falla con un error de conexión a Hugging Face | Vuelve a intentarlo con internet estable; si el modelo ya se descargó antes, puedes forzar modo sin conexión: `set HF_HUB_OFFLINE=1` (Windows) antes del comando. |
+| `ingest.py` dice *"Storage folder ./qdrant_data is already accessed"* | Detén el backend antes de recargar los documentos. |
+| En el log del backend: *"Ollama pudo recortar las instrucciones"* | El prompt no cabe: baja `MAX_CONTEXT_CHARS` en `backend/app/rag_engine.py`. |
+| El panel del asesor dice *"Panel deshabilitado"* | Falta `ADMIN_API_KEY` en `backend/.env`; reinicia el backend. |
+| La llamada de voz o el dictado no funcionan | Usa Chrome o Edge y permite el micrófono. Brave bloquea el reconocimiento de voz. |
+| *"Demasiadas solicitudes seguidas"* | Límite por minuto; espera o sube `RATE_LIMIT_PER_MINUTE`. |
+| Error de CORS en la consola | Abre la página en `http://localhost:5000`, no el archivo directamente. |
 
 ---
 
 ## Estructura del proyecto
 
 ```
-index.html                  Chat principal
+index.html                    Chat, llamada de voz y agendamiento
 screens/
-  programas/                Catálogo de programas de formación
-  citas/                    Mis citas
-  proceso/                  Mi proceso (etapas del aspirante)
-  asesor/                   Vista del asesor (resumen de la conversación)
-icons/                      Escudo e íconos de la Universidad Libre
+  programas/                  Oferta de pregrado de la seccional
+  citas/                      Mis citas (cancelar, reprogramar)
+  proceso/                    Mi proceso (etapas del aspirante)
+  asesor/                     Panel del asesor (con clave)
+js/config.js                  Dirección del backend (local / publicado)
+js/programas-unilibre.js      Datos de los 11 programas (pantalla Programas y chat)
+styles/unilibre.css           Identidad visual de la Universidad Libre
 backend/
-  app/                      API (FastAPI): preguntas, citas, correo, llamadas
-  data/                     Guía de Combarranquilla (fuente de las respuestas)
-  config/domain_knowledge.json   Glosario (SMMLV, PQRS…) y contexto general
-  ingest.py                 Carga los documentos en la base de búsqueda
-  .env.example              Plantilla de configuración (copiar a .env)
+  app/                        API (FastAPI): preguntas, agenda, citas, correo, llamadas, panel
+  config/advisors.json        Asesores, tipos de atención y horario de la agenda
+  config/domain_knowledge.json Ficha oficial de la oferta, glosario y aclaraciones fijas
+  data/                       Documentos de la Universidad + base de citas (no se suben)
+  tests/                      Banco de pruebas
+  evaluate.py                 Corre el banco de pruebas
+  ingest.py                   Carga los documentos en la base de búsqueda
 ```
 
-Tecnologías: HTML/CSS/JS sin frameworks · FastAPI · Qdrant (local) · LangChain ·
-`paraphrase-multilingual-MiniLM-L12-v2` para la búsqueda · Llama 3.1 8B vía Ollama ·
-Resend o Gmail (SMTP) para correos.
+Tecnologías: HTML/CSS/JS sin frameworks · FastAPI · SQLite · Qdrant (local) · LangChain ·
+`paraphrase-multilingual-MiniLM-L12-v2` (búsqueda híbrida) · Llama 3.1 8B vía Ollama ·
+Web Speech API (voz) · Resend o Gmail (correo) · Vapi (llamada telefónica, opcional).
 
 Más detalles técnicos del backend en [`backend/README.md`](backend/README.md).

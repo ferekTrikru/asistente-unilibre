@@ -1,9 +1,35 @@
-# Backend RAG — Asistente Combarranquilla
+# Backend RAG — Asistente Unilibre
 
-API que responde preguntas sobre Combarranquilla a partir de documentos institucionales (PDF, Markdown o texto),
-usando búsqueda vectorial en Qdrant y generación con un LLM local vía Ollama. Es el
-*fallback* del chat en [`../index.html`](../index.html) cuando las reglas locales no
-reconocen la pregunta.
+API del asistente de admisiones de la Universidad Libre (seccional Barranquilla): responde
+preguntas a partir de los documentos institucionales (PDF, Word, Markdown o texto) con
+búsqueda híbrida en Qdrant y generación con un LLM local vía Ollama; además maneja la agenda
+de asesores, el ciclo de vida de las citas y el panel del asesor.
+
+## Rutas de la API
+
+| Ruta | Acceso | Para qué |
+|---|---|---|
+| `GET /health` | público | Comprobar que el backend está encendido |
+| `POST /ask`, `POST /ask/stream` | público, con límite por minuto | Responder una pregunta (`question` + `history` opcional). `/ask/stream` envía la respuesta a medida que se escribe (una línea JSON por evento) |
+| `GET /availability?tipo=` | público | Próximas franjas libres de la agenda para ese tipo de atención |
+| `POST /appointments` | público | Reservar una cita (valida que la franja siga libre; devuelve `id` y `token`) |
+| `POST /appointments/{id}/status`, `/cancel`, `/reschedule`, `/call` | con el `token` de la cita | Consultar, cancelar, reprogramar o pedir la llamada de confirmación (una vez) |
+| `GET /admin/appointments`, `PATCH /admin/appointments/{id}`, `GET /admin/unanswered` | encabezado `X-Admin-Key` | Panel del asesor: citas, cambio de estado, preguntas sin respuesta |
+| `POST /webhooks/vapi` | encabezado `x-vapi-secret` | Resultado de las llamadas de Vapi |
+
+## Cómo se arma cada respuesta
+
+1. **Búsqueda híbrida** (`app/search.py`): 24 candidatos por parecido semántico, reordenados
+   sumando coincidencia de palabras clave y un bono si aparecen en el título de la sección del
+   fragmento. Cada fragmento lleva su ruta de títulos (`ingest.py`).
+2. **Pregunta de seguimiento**: si la pregunta es corta, se busca junto con la anterior del
+   aspirante (`history`).
+3. **Contexto** (`app/rag_engine.py`): la ficha oficial de la oferta (`official_facts`) va
+   siempre primero, luego aclaraciones fijas (`relations`) y los fragmentos (hasta
+   `MAX_CONTEXT_CHARS`). Si el log avisa que Ollama recortó el prompt, bajar ese valor.
+4. **Generación** (`app/llm.py`): Llama 3.1 8B, temperatura 0.1, ventana de 4096 tokens y tope
+   de 220 tokens por respuesta. Las respuestas sin historial quedan en caché.
+5. **Sin respuesta**: si el agente no encuentra el dato, la pregunta se registra para el panel.
 
 ## 0. Instalar Ollama
 
@@ -59,13 +85,13 @@ curl -X POST http://localhost:8000/ask -H "Content-Type: application/json" -d "{
 
 ## 4. Conectar con el frontend
 
-En `../index.html`, la constante `RAG_BACKEND_URL` apunta a esta API. En desarrollo déjala
-en `http://localhost:8000`; cuando despliegues el backend, cámbiala por su URL pública.
+La dirección de esta API se configura en [`../js/config.js`](../js/config.js): en local usa
+`http://127.0.0.1:8000`; al desplegar el backend, pon su URL pública en `PRODUCTION_BACKEND_URL`.
 
 ## 5. Desplegar (Cloud Run)
 
 ```bash
-gcloud run deploy asistente-combarranquilla-backend \
+gcloud run deploy asistente-unilibre-backend \
   --source . \
   --region us-central1 \
   --allow-unauthenticated \
@@ -141,9 +167,12 @@ Para llamadas reales:
    local, expón el puerto con algo como `ngrok http 8000` para que Vapi pueda alcanzarlo.
 5. Pon las tres variables en `.env`.
 
+6. En el dashboard de Vapi define un **Server URL Secret** y ponlo en `.env` como
+   `VAPI_WEBHOOK_SECRET`: sin él, el webhook rechaza todas las peticiones.
+
 El resultado de la llamada (estado, transcripción, resumen) queda en la tabla
-`appointments` de `data/appointments.db`, listo para mostrarse en `screens/asesor/` en una
-siguiente iteración.
+`appointments` de `data/appointments.db` y el resumen se muestra en el panel del asesor
+(`screens/asesor/`).
 
 **Nota:** la forma exacta del payload que envía Vapi al webhook puede cambiar entre
 versiones de su API — revisa su documentación actual antes de depender de campos
@@ -152,19 +181,30 @@ si algún campo falta.
 
 ## Personalizar el conocimiento de dominio
 
-`config/domain_knowledge.json` tiene tres secciones opcionales:
+`config/domain_knowledge.json` tiene cuatro secciones:
+- `official_facts`: ficha compacta y oficial de la oferta de pregrado y el calendario. Va en
+  **todas** las respuestas; evita que el modelo mezcle datos entre programas. Si cambia la
+  oferta, actualizarla aquí y en `../js/programas-unilibre.js`.
 - `general_context`: párrafo que se agrega cuando hay pocos resultados de búsqueda.
-- `glossary`: siglas institucionales a expandir automáticamente (ej. `"ICFES": "Instituto..."`).
-- `relations`: aclaraciones que se inyectan cuando la pregunta menciona un término específico.
+- `glossary`: siglas institucionales a expandir automáticamente (ej. `"SNIES": "Sistema..."`).
+- `relations`: aclaraciones que se inyectan cuando la pregunta menciona un término
+  (ej. `"descuento"` → los descuentos no son acumulables).
 
-No es necesario llenarlo para que el sistema funcione — son ajustes finos opcionales.
+`config/advisors.json` define los asesores, qué tipos de atención cubre cada uno y el horario
+de la agenda (días hábiles, franjas, anticipación mínima).
+
+## Banco de pruebas
+
+`python evaluate.py` (con el backend encendido) corre las preguntas de
+`tests/preguntas_evaluacion.json` y muestra el puntaje. Agrega un caso cada vez que el agente
+responda mal algo importante, para que no vuelva a pasar.
 
 ## Contexto del proyecto (conceptualización y valor)
 
 ### Conceptualización problémica y/o oportunidad
 
-**Identificación de necesidades:** un aspirante que se acerca por primera vez a la
-Combarranquilla trae preguntas heterogéneas — qué programas existen, en qué sede se
+**Identificación de necesidades:** un aspirante que se acerca por primera vez a
+la Universidad Libre trae preguntas heterogéneas — qué programas existen, en qué sede se
 dictan, cuánto cuestan, qué requisitos piden, cómo es la inscripción, si hay financiación,
 o directamente "no sé qué estudiar". Hoy esto se resuelve por dos vías insuficientes: un
 canal humano (línea de admisiones, WhatsApp) que no está disponible 24/7, o información
@@ -213,7 +253,7 @@ nunca deja al aspirante sin respuesta ni inventa datos que no puede sustentar.
 
 ### Caracterización del usuario/cliente
 
-El usuario es el aspirante a un programa de Combarranquilla, en una de cuatro etapas
+El usuario es el aspirante a un programa de la Universidad Libre, en una de cuatro etapas
 del embudo de admisión: **exploración** (quiere saber qué programas, sedes y costos
 existen, sin intención de decisión inmediata), **decisión** (ya tiene un programa en mente
 y necesita requisitos, modalidad o financiación concretos), **indeciso** (no sabe qué
