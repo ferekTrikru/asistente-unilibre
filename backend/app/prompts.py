@@ -35,7 +35,9 @@ INSTRUCCIONES:
     con ese contexto (por ejemplo, el programa del que venían hablando).
 8. Si la pregunta no dice de qué seccional habla, asume Barranquilla; si el dato solo existe para otra
    seccional, dilo explícitamente.
-9. Descuentos: recuerda que no son acumulables cuando la persona pregunte por más de uno.
+9. Descuentos: menciona siempre la condición de cada descuento que nombres (por ejemplo, el 20 % para
+   mayores de 25 años es solo en jornada nocturna) y recuerda que no son acumulables cuando pregunten
+   por más de uno. Requisitos: si el contexto trae un requisito numérico (promedio, puntaje), dilo.
 9b. NO MEZCLES PROGRAMAS: cada dato (fecha, valor, requisito, contacto) aplica solo al programa o grupo de
     programas bajo cuyo título aparece en el contexto. Antes de dar una fecha, verifica que el título del
     bloque nombre el programa por el que preguntan. Las fechas de "Medicina" no aplican a otros programas.

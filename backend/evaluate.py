@@ -15,6 +15,7 @@ import os
 import sys
 import time
 import unicodedata
+import urllib.error
 import urllib.request
 
 BACKEND = os.environ.get("BACKEND_URL", "http://127.0.0.1:8000")
@@ -33,8 +34,17 @@ def ask(question: str, history: list) -> dict:
         data=json.dumps({"question": question, "history": history}).encode(),
         headers={"Content-Type": "application/json"},
     )
-    with urllib.request.urlopen(req, timeout=300) as r:
-        return json.load(r)
+    # El backend limita las peticiones por minuto (RATE_LIMIT_PER_MINUTE): si respondemos
+    # rápido desde la caché, se espera y se reintenta en vez de contar la pregunta como falla.
+    for _ in range(20):
+        try:
+            with urllib.request.urlopen(req, timeout=300) as r:
+                return json.load(r)
+        except urllib.error.HTTPError as exc:
+            if exc.code != 429:
+                raise
+            time.sleep(6)
+    raise RuntimeError("el backend sigue limitando las peticiones (429)")
 
 
 def evaluate(case: dict, result: dict) -> list[str]:

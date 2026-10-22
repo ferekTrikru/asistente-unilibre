@@ -1,4 +1,4 @@
-const CACHE = 'asistente-unilibre-v5';
+const CACHE = 'asistente-unilibre-v6';
 const ASSETS = [
   '/',
   '/index.html',
@@ -12,7 +12,8 @@ const ASSETS = [
   '/icons/unilibre-escudo.png',
   '/icons/unilibre-mark.png',
   '/styles/unilibre.css',
-  '/js/programas-unilibre.js'
+  '/js/programas-unilibre.js',
+  '/js/config.js'
 ];
 
 self.addEventListener('install', (event) => {

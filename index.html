@@ -378,6 +378,8 @@
   .composer-bar.has-text .send-btn{ opacity:1; pointer-events:auto; width:38px; margin-right:0; }
   .composer-bar.has-text .mic-btn{ display:none; }
   .send-btn svg, .mic-btn svg{ width:16px; height:16px; }
+  .mic-btn.is-listening{ color:#fff; background:linear-gradient(155deg, var(--accent-bright), var(--accent)); animation:mic-pulse 1.2s ease-in-out infinite; }
+  @keyframes mic-pulse{ 0%,100%{ box-shadow:0 0 0 0 rgba(200,16,46,.45); } 50%{ box-shadow:0 0 0 7px rgba(200,16,46,0); } }
 
   .disclaimer{
     text-align:center; font-size:10.5px; color:var(--text-tertiary);
@@ -571,13 +573,13 @@
         Mi proceso
       </a>
       <div class="drawer-sep"></div>
-      <div class="drawer-item">
+      <div class="drawer-item" data-action="settings" role="button" tabindex="0">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.6 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z"/></svg>
-        Ajustes
+        Borrar mis datos
       </div>
       <a class="drawer-item" href="screens/asesor/index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M19.5 20a4 4 0 0 1-4 4h-2"/></svg>
-        Vista del asesor <span class="tag">Demo</span>
+        Panel del asesor <span class="tag">Asesores</span>
       </a>
       <div class="drawer-foot">Universidad Libre &middot; Agente de Admisiones</div>
     </nav>
@@ -604,12 +606,12 @@
       </div>
     </main>
 
-    <section class="thread" id="thread"></section>
+    <section class="thread" id="thread" role="log" aria-live="polite" aria-label="Conversación con el asistente"></section>
 
     <footer class="composer">
       <div class="composer-bar" id="composerBar">
         <input id="input" type="text" placeholder="Pregunta lo que sea…" autocomplete="off" />
-        <button class="round-btn mic-btn" aria-label="Usar micrófono">
+        <button class="round-btn mic-btn" id="micBtn" type="button" aria-label="Dictar un mensaje">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg>
         </button>
         <button class="round-btn send-btn" id="sendBtn" aria-label="Enviar">
@@ -628,7 +630,7 @@
       <div class="call-stage">
         <div class="call-orb" id="callOrb" title="Toca para interrumpir"></div>
         <div class="call-status" id="callStatus">Conectando</div>
-        <div class="call-caption" id="callCaption"></div>
+        <div class="call-caption" id="callCaption" aria-live="polite"></div>
         <div class="call-hint" id="callHint"></div>
       </div>
       <div class="call-controls">
@@ -649,6 +651,7 @@
   </div>
 </div>
 
+<script src="js/config.js"></script>
 <script src="js/programas-unilibre.js"></script>
 <script>
 (function(){
@@ -941,21 +944,30 @@
   function strip(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
 
   /* Backend RAG: responde preguntas libres a partir de documentos institucionales.
-     En desarrollo local corre en localhost:8000; al desplegarlo, cambia esta URL. */
-  var RAG_BACKEND_URL = 'http://127.0.0.1:8000';
+     La dirección se configura en js/config.js (local o desplegado). */
+  var RAG_BACKEND_URL = (window.UL_CONFIG && window.UL_CONFIG.backendUrl) || '';
+
+  /* Últimos turnos de la conversación (sin la pregunta actual): el backend los usa para
+     entender preguntas de seguimiento como "¿y de noche?". */
+  function recentHistory(currentQuestion){
+    var msgs = (state.lastMessages || []).slice(-6);
+    var last = msgs[msgs.length-1];
+    if(last && last.role === 'user' && last.text === currentQuestion) msgs = msgs.slice(0, -1);
+    return msgs.slice(-4).map(function(m){ return { role:m.role, text:String(m.text).slice(0, 1900) }; });
+  }
 
   /* Igual que askInstitutionalRag, pero recibe la respuesta a medida que el modelo la
      escribe (una línea JSON por evento) y llama a onText con el texto acumulado, para que
      el chat muestre palabras desde el primer segundo en vez de esperar la respuesta
      completa. Resuelve con { answer, sources } al terminar. */
-  function streamInstitutionalRag(question, onText){
+  function streamInstitutionalRag(question, onText, history){
     return fetch(RAG_BACKEND_URL + '/ask/stream', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: question })
+      body: JSON.stringify({ question: question, history: history || [] })
     }).then(function(res){
       if(!res.ok) throw new Error('backend_error');
-      if(!res.body || !window.TextDecoder) return askInstitutionalRag(question);
+      if(!res.body || !window.TextDecoder) return askInstitutionalRag(question, history);
       var reader = res.body.getReader();
       var decoder = new TextDecoder();
       var buffer = '', text = '', result = null;
@@ -984,11 +996,11 @@
     });
   }
 
-  function askInstitutionalRag(question){
+  function askInstitutionalRag(question, history){
     return fetch(RAG_BACKEND_URL + '/ask', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question: question })
+      body: JSON.stringify({ question: question, history: history || [] })
     }).then(function(res){
       if(!res.ok) throw new Error('backend_error');
       return res.json();
@@ -1043,16 +1055,27 @@
   var pendingContactCapture = null;
 
   function pickAdvisor(tipo){ var pool = ADVISORS[tipo]||['Equipo de admisiones']; return pool[Math.floor(Math.random()*pool.length)]; }
-  function generateSlots(){
+  // Respaldo sin backend: dos franjas mañana (las citas quedan solo en este navegador).
+  function generateSlots(tipo){
     var d1 = new Date(); d1.setDate(d1.getDate()+1); d1.setHours(10,0,0,0);
     var d2 = new Date(); d2.setDate(d2.getDate()+1); d2.setHours(15,0,0,0);
-    return [d1,d2];
+    return [d1,d2].map(function(d){ return { iso:d.toISOString(), label:formatSlot(d), asesor:pickAdvisor(tipo), offline:true }; });
   }
   function formatSlot(d){
     var hh = d.getHours();
     var ampm = hh>=12 ? 'p. m.' : 'a. m.';
     var h12 = hh%12; if(h12===0) h12=12;
-    return WEEKDAYS[d.getDay()]+' '+d.getDate()+' de '+MONTHS[d.getMonth()]+' a las '+h12+':00 '+ampm;
+    return WEEKDAYS[d.getDay()]+' '+d.getDate()+' de '+MONTHS[d.getMonth()]+' a las '+h12+':'+('0'+d.getMinutes()).slice(-2)+' '+ampm;
+  }
+  // Franjas libres reales de la agenda de asesores (backend); sin backend, el respaldo local.
+  function fetchSlots(tipo){
+    return fetch(RAG_BACKEND_URL + '/availability?tipo=' + encodeURIComponent(tipo))
+      .then(function(res){ if(!res.ok) throw new Error('backend_error'); return res.json(); })
+      .then(function(data){
+        if(!data.slots || !data.slots.length) throw new Error('no_slots');
+        return data.slots;
+      })
+      .catch(function(){ return generateSlots(tipo); });
   }
 
   function startScheduling(defaultType, context){
@@ -1073,11 +1096,12 @@
       });
     });
   }
-  function offerSlots(tipo, modalidad, context){
-    typingThenRespond(function(){
-      var slots = generateSlots();
-      addMsg('bot','Tengo disponibilidad con un asesor de '+tipo.toLowerCase()+' '+formatSlot(slots[0])+' o '+formatSlot(slots[1])+'. ¿Cuál prefieres?');
-      addChipCard(slots.map(formatSlot), function(label, idx){
+  function offerSlots(tipo, modalidad, context, intro){
+    var typing = addTyping();
+    fetchSlots(tipo).then(function(slots){
+      typing.remove();
+      addMsg('bot',(intro || 'Estos son los próximos horarios libres con un asesor de '+tipo.toLowerCase()+'.')+' ¿Cuál prefieres?');
+      addChipCard(slots.map(function(s){ return cap(s.label); }), function(label, idx){
         addMsg('user', label);
         askContact(tipo, modalidad, slots[idx], context);
       });
@@ -1101,63 +1125,90 @@
       };
     });
   }
-  function notifyAppointmentBackend(appt, context){
-    fetch(RAG_BACKEND_URL + '/appointments', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        tipo: appt.tipo,
-        modalidad: appt.modalidad,
-        slot_label: appt.label,
-        slot_iso: appt.iso,
-        asesor: appt.asesor,
-        email: appt.email,
-        telefono: appt.telefono,
-        programa: (context && context.programa) || state.profile.programa || null,
-        sede: (context && context.sede) || state.profile.sede || null,
-        necesidad: (context && context.necesidad) || state.profile.necesidad || null
-      })
-    }).then(function(res){ return res.json(); }).then(function(data){
-      typingThenRespond(function(){
-        if(data && data.email_sent){
-          addMsg('bot','Te envié la confirmación de la cita a '+appt.email+'.');
-        }else if(data && data.email_detail && data.email_detail.indexOf('simulated')===0){
-          addMsg('bot','Tu cita quedó guardada. (Modo demo: el envío de correo real está desactivado — normalmente aquí llegaría la confirmación a '+appt.email+'.)');
-        }else{
-          addMsg('bot','Guardé tu cita, pero no pude enviarte el correo de confirmación justo ahora. Puedes verla igual en "Mis citas".');
-        }
-      });
-      if(data && data.id && appt.telefono){
-        offerConfirmationCall(data.id, appt);
+  function cap(s){ return s ? s.charAt(0).toUpperCase()+s.slice(1) : s; }
+
+  /* La cita se confirma cuando el backend la acepta: así la franja queda reservada de
+     verdad en la agenda del asesor. Si otro aspirante la tomó un instante antes (409),
+     se ofrecen nuevos horarios. Sin backend, la cita queda solo en este navegador. */
+  function confirmAppointment(tipo, modalidad, slot, context, email, telefono){
+    var typing = addTyping();
+    var payload = {
+      tipo: tipo, modalidad: modalidad, slot_label: slot.label, slot_iso: slot.iso, asesor: slot.asesor,
+      email: email, telefono: telefono,
+      programa: (context && context.programa) || state.profile.programa || null,
+      sede: (context && context.sede) || state.profile.sede || null,
+      necesidad: (context && context.necesidad) || state.profile.necesidad || null,
+      transcript: (state.lastMessages || []).slice(-12).map(function(m){ return { role:m.role, text:String(m.text).slice(0,1900) }; })
+    };
+    var request = slot.offline ? Promise.reject(new Error('offline')) : fetch(RAG_BACKEND_URL + '/appointments', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload)
+    }).then(function(res){
+      return res.json().catch(function(){ return {}; }).then(function(data){ return { status: res.status, data: data }; });
+    });
+
+    request.then(function(r){
+      typing.remove();
+      if(r.status === 409){
+        offerSlots(tipo, modalidad, context, 'Ese horario se acaba de ocupar. Te muestro los que siguen libres.');
+        return;
       }
+      if(r.status !== 200) throw new Error('backend_error');
+      var d = r.data;
+      saveAppointment(tipo, modalidad, { iso:d.slot_iso, label:d.slot_label, asesor:d.asesor }, context, email, telefono, d.id, d.token);
+      if(d.email_sent){
+        addMsg('bot','Te envié la confirmación de la cita a '+email+'.');
+      }else if(d.email_detail && d.email_detail.indexOf('simulated')===0){
+        addMsg('bot','(Modo demo: el envío de correo real está desactivado — normalmente aquí llegaría la confirmación a '+email+'.)');
+      }else{
+        addMsg('bot','No pude enviarte el correo de confirmación justo ahora, pero tu cita quedó reservada. Puedes verla en "Mis citas".');
+      }
+      if(telefono) offerConfirmationCall(d.id, d.token, telefono);
     }).catch(function(){
-      typingThenRespond(function(){
-        addMsg('bot','Guardé tu cita en el chat. El servicio de confirmación por correo no está disponible en este momento.');
-      });
+      typing.remove();
+      saveAppointment(tipo, modalidad, slot, context, email, telefono, null, null);
+      addMsg('bot','Guardé tu cita en este navegador. El sistema de agenda no está disponible en este momento: un asesor confirmará tu horario.');
     });
   }
-  function offerConfirmationCall(appointmentId, appt){
+  function saveAppointment(tipo, modalidad, slot, context, email, telefono, backendId, token){
+    var appt = { id:Date.now(), backendId:backendId, token:token, status:'confirmada', tipo:tipo, modalidad:modalidad,
+                 label:slot.label, iso:slot.iso, asesor:slot.asesor, contexto:context||{}, email:email, telefono:telefono||null };
+    state.appointments.push(appt);
+    state.profile.cita = appt;
+    state.profile.etapa = 'Cita';
+    state.profile.interes = 'Alto';
+    state.profile.proximaAccion = 'Asistir a la cita de '+tipo.toLowerCase()+' el '+appt.label;
+    saveState();
+    addMsg('bot','Listo. Tu cita quedó agendada para el '+appt.label+' — '+tipo+' · '+modalidad+', con '+appt.asesor+'.');
+    addMsg('bot','El asesor ya tiene el resumen de nuestra conversación, así no tendrás que repetir nada. Puedes reprogramarla o cancelarla en "Mis citas".');
+    addLinkCard('Ver mis citas', 'screens/citas/index.html');
+    return appt;
+  }
+  function offerConfirmationCall(appointmentId, token, telefono){
     typingThenRespond(function(){
-      addMsg('bot','¿Quieres que te llamemos al '+appt.telefono+' para confirmar la cita por teléfono?');
+      addMsg('bot','¿Quieres que te llamemos al '+telefono+' para confirmar la cita por teléfono?');
       addChipCard(['Sí, llámenme','No, gracias'], function(choice){
         addMsg('user', choice);
         if(choice==='Sí, llámenme'){
-          triggerConfirmationCall(appointmentId, appt);
+          triggerConfirmationCall(appointmentId, token, telefono);
         }
       });
     });
   }
-  function triggerConfirmationCall(appointmentId, appt){
+  function triggerConfirmationCall(appointmentId, token, telefono){
     typingThenRespond(function(){
       addMsg('bot','Perfecto, estoy programando la llamada...');
-      fetch(RAG_BACKEND_URL + '/appointments/' + appointmentId + '/call', { method:'POST' })
+      fetch(RAG_BACKEND_URL + '/appointments/' + appointmentId + '/call', {
+        method:'POST', headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ token: token })
+      })
         .then(function(res){ return res.json(); })
         .then(function(data){
           typingThenRespond(function(){
             if(data && data.call_scheduled){
-              addMsg('bot','Listo, te llamaremos en breve al '+appt.telefono+'.');
+              addMsg('bot','Listo, te llamaremos en breve al '+telefono+'.');
             }else if(data && data.call_detail && data.call_detail.indexOf('simulated')===0){
-              addMsg('bot','(Modo demo: la llamada real está desactivada — normalmente aquí te llamaríamos al '+appt.telefono+' para confirmar.)');
+              addMsg('bot','(Modo demo: la llamada real está desactivada — normalmente aquí te llamaríamos al '+telefono+' para confirmar.)');
+            }else if(data && data.call_detail === 'already_requested'){
+              addMsg('bot','Ya habíamos programado una llamada para esta cita.');
             }else{
               addMsg('bot','No pude programar la llamada en este momento. Tu cita igual quedó confirmada.');
             }
@@ -1167,24 +1218,6 @@
             addMsg('bot','El servicio de llamadas no está disponible en este momento. Tu cita igual quedó confirmada.');
           });
         });
-    });
-  }
-  function confirmAppointment(tipo, modalidad, slot, context, email, telefono){
-    typingThenRespond(function(){
-      var advisor = pickAdvisor(tipo);
-      var appt = { id:Date.now(), tipo:tipo, modalidad:modalidad, label:formatSlot(slot), iso:slot.toISOString(), asesor:advisor, contexto:context||{}, email:email, telefono:telefono||null };
-      state.appointments.push(appt);
-      state.profile.cita = appt;
-      state.profile.etapa = 'Cita';
-      state.profile.interes = 'Alto';
-      state.profile.proximaAccion = 'Asistir a la cita de '+tipo.toLowerCase()+' el '+appt.label;
-      saveState();
-      addMsg('bot','Listo. Tu cita quedó agendada para el '+appt.label+' — '+tipo+' · '+modalidad+', con '+advisor+'.');
-      notifyAppointmentBackend(appt, context);
-      typingThenRespond(function(){
-        addMsg('bot','También dejé un resumen de nuestra conversación para el asesor, así no tendrás que repetir nada.');
-        addLinkCard('Ver resumen para el asesor', 'screens/asesor/index.html');
-      });
     });
   }
   function followUpEscalation(tipoSugerido, context){
@@ -1304,6 +1337,7 @@
       addMsg('bot','No tengo información suficiente para darte una respuesta precisa sobre eso. Puedo ayudarte a agendar una cita con un asesor de admisiones de la Universidad Libre.');
       startScheduling('Asesoría académica', { necesidad:raw });
     }
+    var history = recentHistory(raw);
     streamInstitutionalRag(raw, function(textSoFar){
       if(!live){
         typing.remove();
@@ -1314,7 +1348,7 @@
       }
       live.querySelector('.bubble').textContent = textSoFar;
       thread.scrollTop = thread.scrollHeight;
-    }).then(function(data){
+    }, history).then(function(data){
       if(data && data.answer && data.sources && data.sources.length){
         if(live){
           // El texto final ya viene procesado (siglas expandidas): reemplaza al parcial.
@@ -1670,11 +1704,13 @@
       if(flush && rest.slice(consumed).trim()){ callSpeak(rest.slice(consumed)); consumed = rest.length; }
       spokenUpTo += consumed;
     }
+    // Historial de la llamada (sin el saludo ni la frase actual) para entender seguimientos.
+    var callHistory = c.log.slice(1, -1).slice(-4);
     streamInstitutionalRag(text, function(textSoFar){
       if(!alive(c, turn)) return;
       callCaption(text, textSoFar);
       speakCompleteSentences(textSoFar, false);
-    }).then(function(data){
+    }, callHistory).then(function(data){
       if(!alive(c, turn)) return;
       var found = data && data.answer && data.sources && data.sources.length;
       if(found){
@@ -1802,6 +1838,57 @@
   document.querySelectorAll('[data-action="call"]').forEach(function(btn){
     btn.addEventListener('click', startCall);
   });
+
+  /* ---------- Dictado: el micrófono de la barra escribe lo que dices y lo envía ---------- */
+  (function setupDictation(){
+    var micBtn = document.getElementById('micBtn');
+    if(!SpeechRec){ micBtn.hidden = true; return; }
+    var rec = null;
+    micBtn.addEventListener('click', function(){
+      if(rec){ rec.stop(); return; }
+      rec = new SpeechRec();
+      rec.lang = 'es-CO';
+      rec.interimResults = true;
+      rec.continuous = false;
+      micBtn.classList.add('is-listening');
+      micBtn.setAttribute('aria-label', 'Detener dictado');
+      input.placeholder = 'Te escucho…';
+      rec.onresult = function(ev){
+        var text = '';
+        for(var i = 0; i < ev.results.length; i++) text += ev.results[i][0].transcript;
+        input.value = text;
+        bar.classList.toggle('has-text', text.trim().length > 0);
+        if(ev.results[ev.results.length-1].isFinal) trySend();
+      };
+      rec.onerror = function(ev){
+        if(ev.error === 'not-allowed') alert('Necesito permiso para usar tu micrófono. Actívalo en la barra de direcciones del navegador.');
+        else if(ev.error === 'network') alert('Tu navegador no permite el dictado por voz. Usa Google Chrome o Microsoft Edge.');
+      };
+      rec.onend = function(){
+        rec = null;
+        micBtn.classList.remove('is-listening');
+        micBtn.setAttribute('aria-label', 'Dictar un mensaje');
+        input.placeholder = 'Pregunta lo que sea…';
+      };
+      try{ rec.start(); }catch(e){ rec = null; micBtn.classList.remove('is-listening'); }
+    });
+  })();
+
+  /* ---------- Borrar mis datos de este navegador ---------- */
+  (function setupSettings(){
+    var item = document.querySelector('[data-action="settings"]');
+    function clearData(){
+      var ok = confirm('¿Borrar tu conversación, tu proceso y las citas guardadas en este navegador?\n\nLas citas ya reservadas con un asesor no se cancelan: para eso usa «Mis citas».');
+      if(!ok) return;
+      try{ localStorage.removeItem(CF_KEY); localStorage.removeItem('cfPendingQuestion'); }catch(e){}
+      location.reload();
+    }
+    item.addEventListener('click', clearData);
+    item.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); clearData(); } });
+  })();
+
+  // Escape cuelga la llamada de voz.
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape' && call) endCall(); });
 
   /* ---------- Consumir una pregunta enviada desde otra pantalla ---------- */
   (function consumePendingQuestion(){
