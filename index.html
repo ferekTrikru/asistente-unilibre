@@ -2,9 +2,9 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8" />
-<title>Asistente Combarranquilla</title>
+<title>Asistente Unilibre</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<meta name="theme-color" content="#ffffff" />
+<meta name="theme-color" content="#c8102e" />
 <meta name="color-scheme" content="light" />
 <link rel="manifest" href="/manifest.json" />
 <link rel="icon" href="/icons/icon-32.png" sizes="32x32" type="image/png" />
@@ -13,30 +13,30 @@
 <meta name="apple-mobile-web-app-capable" content="yes" />
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-<meta name="apple-mobile-web-app-title" content="Asistente Combarranquilla" />
+<meta name="apple-mobile-web-app-title" content="Asistente Unilibre" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
   /* ============ Tokens ============ */
   :root{
     --bg:                #ffffff;
-    --bg-well:            #e9f1e3;
-    --surface:            #f3f8ef;
-    --surface-2:          #e8f1e1;
-    --stroke:             rgba(0,90,45,.11);
-    --stroke-strong:      rgba(0,90,45,.22);
-    --text-primary:       #12301d;
-    --text-secondary:     #475e4f;
-    --text-tertiary:      #667b6d;
-    --accent:             #007a3d;
-    --accent-bright:      #15934a;
-    --accent-deep:        #005a2c;
-    --accent-core:        #d6ecb0;
-    --shadow-ambient:     rgba(0,122,61,.22);
-    --sun: #e0ab0e;
-    --leaf: #a0ac28;
-    --font-display:       'Nunito', 'Manrope', -apple-system, 'Segoe UI', sans-serif;
+    --bg-well:            #f3eeec;
+    --surface:            #faf7f6;
+    --surface-2:          #f2ebe9;
+    --stroke:             rgba(26,20,21,.11);
+    --stroke-strong:      rgba(26,20,21,.22);
+    --text-primary:       #1a1415;
+    --text-secondary:     #4d4344;
+    --text-tertiary:      #6f6466;
+    --accent:             #c8102e;
+    --accent-bright:      #e1251b;
+    --accent-deep:        #8a0b1f;
+    --accent-core:        #fde3a7;
+    --shadow-ambient:     rgba(200,16,46,.22);
+    --sun: #f2a900;
+    --leaf: #e1251b;
+    --font-display:       'Playfair Display', Georgia, 'Times New Roman', serif;
     --font-sans:          'Manrope', -apple-system, 'Segoe UI', sans-serif;
   }
 
@@ -60,7 +60,7 @@
     align-items:center;
     justify-content:center;
     background:
-      radial-gradient(60% 45% at 50% 100%, rgba(0,122,61,.16), transparent 70%),
+      radial-gradient(60% 45% at 50% 100%, rgba(200,16,46,.16), transparent 70%),
       var(--bg-well);
   }
 
@@ -82,24 +82,24 @@
       border-radius:34px;
       box-shadow:
         0 0 0 1px var(--stroke),
-        0 40px 100px -20px rgba(18,48,29,.22),
+        0 40px 100px -20px rgba(26,20,21,.22),
         0 0 140px -40px var(--shadow-ambient);
     }
   }
 
-  /* ambient backdrop: white -> soft leaf-green/sun bloom -> yellow swoosh (echoes the logo underline) */
+  /* ambient backdrop: white -> soft red/gold bloom -> gold swoosh (Universidad Libre: rojo, negro, amarillo, blanco) */
   .ambient{
     position:absolute; inset:0; z-index:0; pointer-events:none;
     background:
-      radial-gradient(70% 38% at 50% 86%, rgba(160,172,40,.20), transparent 65%),
-      radial-gradient(90% 42% at 50% 106%, rgba(224,171,14,.16), transparent 70%),
-      linear-gradient(180deg, #ffffff 0%, #fbfdf9 55%, #f0f6ea 100%);
+      radial-gradient(70% 38% at 50% 86%, rgba(200,16,46,.09), transparent 65%),
+      radial-gradient(90% 42% at 50% 106%, rgba(242,169,0,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fdfbfa 55%, #f6efed 100%);
   }
   .ambient::after{
     content:"";
     position:absolute; left:-10%; right:-10%; bottom:9%;
     height:2px;
-    background:linear-gradient(90deg, transparent, rgba(224,171,14,.55) 40%, rgba(240,196,40,.95) 50%, rgba(224,171,14,.55) 60%, transparent);
+    background:linear-gradient(90deg, transparent, rgba(242,169,0,.55) 40%, rgba(255,190,40,.95) 50%, rgba(242,169,0,.55) 60%, transparent);
     height:3px;
     filter:blur(.4px);
     opacity:.6;
@@ -107,7 +107,7 @@
   }
   .ambient .grain{
     position:absolute; inset:0;
-    background-image:radial-gradient(rgba(0,90,45,.5) .6px, transparent .6px);
+    background-image:radial-gradient(rgba(26,20,21,.5) .6px, transparent .6px);
     background-size:14px 14px;
     -webkit-mask-image:radial-gradient(55% 35% at 18% 96%, #000 0%, transparent 70%);
             mask-image:radial-gradient(55% 35% at 18% 96%, #000 0%, transparent 70%);
@@ -132,15 +132,18 @@
   .iconbtn:active{ transform:scale(.94); }
   .iconbtn svg{ width:19px; height:19px; }
 
-  .brand{ display:flex; align-items:center; }
-  .brand img{ height:40px; width:auto; display:block; border-radius:10px; box-shadow:0 4px 14px -6px rgba(0,103,68,.5); }
+  .brand{ display:flex; align-items:center; gap:10px; }
+  .brand img{ height:40px; width:40px; display:block; border-radius:50%; box-shadow:0 4px 14px -6px rgba(26,20,21,.5); }
+  .brand-name{ display:flex; flex-direction:column; line-height:1.05; }
+  .brand-name b{ font-family:var(--font-display); font-weight:800; font-size:16px; color:var(--text-primary); }
+  .brand-name small{ font-size:9.5px; font-weight:800; letter-spacing:.22em; text-transform:uppercase; color:var(--accent); margin-top:3px; }
 
   .topbar-spacer{ width:38px; height:38px; flex-shrink:0; }
 
   /* ============ Drawer ============ */
   .scrim{
     position:absolute; inset:0; z-index:10;
-    background:rgba(18,48,29,.28);
+    background:rgba(26,20,21,.28);
     backdrop-filter:blur(2px);
     opacity:0; pointer-events:none;
     transition:opacity .25s ease;
@@ -150,7 +153,7 @@
   .drawer{
     position:absolute; top:0; bottom:0; left:0; z-index:11;
     width:78%; max-width:300px;
-    background:linear-gradient(175deg, #ffffff, #f1f7ec);
+    background:linear-gradient(175deg, #ffffff, #f7f1ef);
     border-right:1px solid var(--stroke);
     transform:translateX(-100%);
     transition:transform .32s cubic-bezier(.32,.72,.24,1);
@@ -165,7 +168,7 @@
     font-size:19px; color:var(--accent);
     padding:6px 10px 16px;
   }
-  .drawer-mark{ height:28px; width:auto; border-radius:7px; }
+  .drawer-mark{ height:30px; width:30px; border-radius:50%; }
   .drawer-item{
     display:flex; align-items:center; gap:12px;
     padding:11px 10px; border-radius:11px;
@@ -235,14 +238,14 @@
   }
   .chip{
     border:1px solid var(--stroke-strong);
-    background:rgba(0,90,45,.02);
+    background:rgba(26,20,21,.02);
     color:var(--text-secondary);
     font-size:12.5px; font-weight:600;
     padding:9px 14px; border-radius:100px;
     cursor:pointer;
     transition:border-color .18s ease, color .18s ease, background .18s ease, transform .12s ease;
   }
-  .chip:hover{ border-color:var(--accent); color:var(--text-primary); background:rgba(0,122,61,.09); }
+  .chip:hover{ border-color:var(--accent); color:var(--text-primary); background:rgba(200,16,46,.09); }
   .chip:active{ transform:scale(.96); }
 
   /* ============ Thread (chat state) ============ */
@@ -257,12 +260,12 @@
     padding:6px 18px 14px;
     gap:16px;
     scrollbar-width:thin;
-    scrollbar-color:rgba(21,147,74,.35) transparent;
+    scrollbar-color:rgba(225,37,27,.35) transparent;
   }
   .thread::-webkit-scrollbar{ width:5px; }
   .thread::-webkit-scrollbar-track{ background:transparent; }
-  .thread::-webkit-scrollbar-thumb{ background:rgba(21,147,74,.35); border-radius:100px; }
-  .thread::-webkit-scrollbar-thumb:hover{ background:rgba(21,147,74,.55); }
+  .thread::-webkit-scrollbar-thumb{ background:rgba(225,37,27,.35); border-radius:100px; }
+  .thread::-webkit-scrollbar-thumb:hover{ background:rgba(225,37,27,.55); }
   .app.chatting .thread{ display:flex; }
 
   .msg{
@@ -282,10 +285,10 @@
     white-space:pre-line;
   }
   .msg.user .bubble{
-    background:linear-gradient(155deg, var(--accent), #005a2c);
+    background:linear-gradient(155deg, var(--accent), #8a0b1f);
     color:#fff;
     border-bottom-right-radius:6px;
-    box-shadow:0 6px 18px -8px rgba(0,122,61,.6);
+    box-shadow:0 6px 18px -8px rgba(200,16,46,.6);
   }
   .msg.bot .bubble{
     background:var(--surface);
@@ -305,8 +308,8 @@
 
   .bot-avatar{
     width:28px; height:28px; border-radius:50%; flex-shrink:0;
-    background:radial-gradient(circle at 35% 30%, #b9d65a, var(--accent) 45%, var(--accent-deep) 100%);
-    box-shadow:0 0 12px -2px rgba(0,122,61,.8);
+    background:radial-gradient(circle at 35% 30%, #f2a900, var(--accent) 45%, var(--accent-deep) 100%);
+    box-shadow:0 0 12px -2px rgba(200,16,46,.8);
     margin-top:2px;
   }
   .bot-avatar.thinking{ animation:think-pulse 1.1s ease-in-out infinite; }
@@ -338,16 +341,16 @@
     background:rgba(255,255,255,.92);
     -webkit-backdrop-filter:blur(24px) saturate(180%);
     backdrop-filter:blur(24px) saturate(180%);
-    border:1px solid rgba(0,90,45,.16);
+    border:1px solid rgba(26,20,21,.16);
     border-radius:100px;
     padding:6px 6px 6px 20px;
-    box-shadow:0 10px 34px -14px rgba(18,48,29,.15), inset 0 1px 0 rgba(255,255,255,.08);
+    box-shadow:0 10px 34px -14px rgba(26,20,21,.15), inset 0 1px 0 rgba(255,255,255,.08);
     transition:border-color .2s ease, box-shadow .2s ease, background .2s ease;
   }
   .composer-bar:focus-within{
     border-color:var(--accent);
     background:#fff;
-    box-shadow:0 0 0 4px rgba(0,122,61,.14), inset 0 1px 0 rgba(255,255,255,.1);
+    box-shadow:0 0 0 4px rgba(200,16,46,.14), inset 0 1px 0 rgba(255,255,255,.1);
   }
   .composer-bar input{
     flex:1; background:none; border:none; outline:none;
@@ -369,7 +372,7 @@
   .send-btn{
     background:linear-gradient(155deg, var(--accent-bright), var(--accent));
     color:#fff;
-    box-shadow:0 4px 14px -4px rgba(0,122,61,.7);
+    box-shadow:0 4px 14px -4px rgba(200,16,46,.7);
     opacity:0; pointer-events:none; width:0; margin-right:-4px;
   }
   .composer-bar.has-text .send-btn{ opacity:1; pointer-events:auto; width:38px; margin-right:0; }
@@ -388,15 +391,15 @@
   }
   .card-chip{
     border:1px solid var(--stroke-strong);
-    background:rgba(0,90,45,.02);
+    background:rgba(26,20,21,.02);
     color:var(--text-secondary);
     font-size:12.5px; font-weight:600;
     padding:8px 13px; border-radius:100px;
     cursor:pointer;
     transition:border-color .18s ease, color .18s ease, background .18s ease, transform .12s ease, opacity .18s ease;
   }
-  .card-chip:hover:not(:disabled){ border-color:var(--accent); color:var(--text-primary); background:rgba(0,122,61,.09); }
-  .card-chip.is-suggested{ border-color:rgba(21,147,74,.5); color:var(--text-primary); }
+  .card-chip:hover:not(:disabled){ border-color:var(--accent); color:var(--text-primary); background:rgba(200,16,46,.09); }
+  .card-chip.is-suggested{ border-color:rgba(225,37,27,.5); color:var(--text-primary); }
   .card-chip.is-picked{ background:linear-gradient(155deg, var(--accent-bright), var(--accent)); border-color:transparent; color:#fff; }
   .card-chip:disabled{ pointer-events:none; }
   .card-chip.is-disabled{ opacity:.35; }
@@ -405,27 +408,138 @@
   .linkcard{
     display:inline-flex; align-items:center; gap:8px;
     padding:11px 15px; border-radius:14px;
-    background:linear-gradient(155deg, rgba(21,147,74,.16), rgba(0,122,61,.05));
-    border:1px solid rgba(21,147,74,.32);
+    background:linear-gradient(155deg, rgba(225,37,27,.16), rgba(200,16,46,.05));
+    border:1px solid rgba(225,37,27,.32);
     color:var(--text-primary); text-decoration:none;
     font-size:13.5px; font-weight:700;
     transition:border-color .18s ease, background .18s ease, transform .12s ease;
   }
-  .linkcard:hover{ border-color:var(--accent); background:linear-gradient(155deg, rgba(21,147,74,.24), rgba(0,122,61,.1)); }
+  .linkcard:hover{ border-color:var(--accent); background:linear-gradient(155deg, rgba(225,37,27,.24), rgba(200,16,46,.1)); }
   .linkcard:active{ transform:scale(.97); }
   .linkcard svg{ width:15px; height:15px; flex-shrink:0; }
 
   .drawer-item{ position:relative; }
   .drawer-item .tag{
     margin-left:auto; font-size:9.5px; font-weight:800; letter-spacing:.06em; text-transform:uppercase;
-    color:var(--accent-bright); background:rgba(0,122,61,.16); border:1px solid rgba(21,147,74,.32);
+    color:var(--accent-bright); background:rgba(200,16,46,.16); border:1px solid rgba(225,37,27,.32);
     padding:2px 7px; border-radius:100px;
   }
+
+  /* ============ Llamada de voz con el asistente ============ */
+  .call-cta{
+    display:inline-flex; align-items:center; gap:8px; margin:4px auto 0;
+    padding:10px 18px; border-radius:100px; cursor:pointer;
+    border:1px solid rgba(200,16,46,.35); background:#fff; color:var(--accent);
+    font-family:var(--font-sans); font-size:13px; font-weight:700;
+    box-shadow:0 8px 20px -14px rgba(200,16,46,.7);
+    transition:background .18s ease, border-color .18s ease, transform .12s ease;
+  }
+  .call-cta:hover{ background:rgba(200,16,46,.06); border-color:var(--accent); }
+  .call-cta:active{ transform:scale(.97); }
+  .call-cta svg{ width:16px; height:16px; }
+
+  .call{
+    position:absolute; inset:0; z-index:20;
+    display:flex; flex-direction:column;
+    background:
+      radial-gradient(70% 40% at 50% 92%, rgba(200,16,46,.10), transparent 70%),
+      radial-gradient(90% 40% at 50% 108%, rgba(242,169,0,.16), transparent 70%),
+      linear-gradient(180deg, #ffffff 0%, #fdfbfa 55%, #f6efed 100%);
+    opacity:0; pointer-events:none; transform:translateY(14px);
+    transition:opacity .3s ease, transform .35s cubic-bezier(.22,.9,.32,1);
+  }
+  .app.in-call .call{ opacity:1; pointer-events:auto; transform:none; }
+
+  .call-top{
+    position:relative; display:flex; align-items:center; gap:12px;
+    padding:max(18px, env(safe-area-inset-top)) 20px 16px;
+    background:linear-gradient(160deg, #d6152f 0%, #c8102e 48%, #8a0b1f 100%); color:#fff;
+  }
+  .call-top::after{
+    content:""; position:absolute; left:0; right:0; bottom:-5px; height:5px;
+    background:linear-gradient(180deg, #141414 0 3px, #f2a900 3px 5px);
+  }
+  .call-top img{ width:38px; height:38px; border-radius:50%; box-shadow:0 0 0 2px rgba(255,255,255,.9); }
+  .call-top div{ display:flex; flex-direction:column; line-height:1.15; }
+  .call-top b{ font-family:var(--font-display); font-size:17px; font-weight:700; }
+  .call-top span{ font-size:11.5px; font-weight:600; color:rgba(255,255,255,.8); margin-top:3px; font-variant-numeric:tabular-nums; }
+  .call-live{
+    margin-left:auto; display:inline-flex; align-items:center; gap:6px;
+    font-size:9.5px; font-weight:800; letter-spacing:.14em; text-transform:uppercase;
+    color:#141414; background:#f2a900; padding:5px 10px; border-radius:100px;
+  }
+  .call-live::before{ content:""; width:6px; height:6px; border-radius:50%; background:#c8102e; animation:live-blink 1.4s ease-in-out infinite; }
+  @keyframes live-blink{ 50%{ opacity:.25; } }
+
+  .call-stage{
+    flex:1; min-height:0; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:22px; padding:24px 28px 8px; text-align:center;
+  }
+  .call-orb{ position:relative; width:min(62vw, 250px); height:min(62vw, 250px); cursor:pointer; }
+  .call-orb canvas{
+    position:absolute; top:50%; left:50%; width:115%; height:115%; transform:translate(-50%,-50%);
+    -webkit-mask-image:radial-gradient(circle closest-side, #000 50%, transparent 90%);
+            mask-image:radial-gradient(circle closest-side, #000 50%, transparent 90%);
+  }
+  .call-status{
+    display:inline-flex; align-items:center; gap:9px;
+    font-size:11.5px; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:#8a0b1f;
+  }
+  .call-status::before, .call-status::after{
+    content:""; width:8px; height:8px; background:#f2a900;
+    clip-path:polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%);
+  }
+  .call.is-listening .call-status::before, .call.is-listening .call-status::after{ animation:live-blink 1.1s ease-in-out infinite; }
+  .call-caption{
+    min-height:92px; max-width:340px; display:flex; flex-direction:column; gap:8px; justify-content:flex-start;
+  }
+  .call-caption .you{ font-size:13.5px; font-weight:600; color:var(--text-tertiary); }
+  .call-caption .you.interim{ opacity:.7; }
+  .call-caption .bot{
+    font-family:var(--font-display); font-style:italic; font-size:19px; line-height:1.35; color:var(--text-primary);
+    display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden;
+  }
+  .call-hint{ font-size:11px; color:var(--text-tertiary); min-height:15px; }
+  .call-error{
+    max-width:320px; font-size:13.5px; line-height:1.5; color:var(--text-secondary);
+    background:#fff; border-top:3px solid #c8102e; border-radius:14px; padding:14px 16px;
+    box-shadow:0 14px 30px -22px rgba(26,20,21,.4);
+  }
+
+  .call-controls{
+    display:flex; align-items:flex-start; justify-content:center; gap:28px;
+    padding:12px 24px max(26px, env(safe-area-inset-bottom));
+  }
+  .call-ctl{ display:flex; flex-direction:column; align-items:center; gap:8px; background:none; border:0; cursor:pointer;
+    font-size:10.5px; font-weight:700; color:var(--text-secondary); font-family:var(--font-sans); }
+  .call-ctl i{
+    width:56px; height:56px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    background:#fff; border:1px solid var(--stroke-strong); color:var(--text-primary);
+    box-shadow:0 10px 24px -16px rgba(26,20,21,.5); transition:transform .12s ease, background .18s ease, color .18s ease;
+  }
+  .call-ctl:active i{ transform:scale(.93); }
+  .call-ctl svg{ width:22px; height:22px; }
+  .call-ctl.is-off i{ background:#141414; color:#fff; border-color:#141414; box-shadow:inset 0 -3px 0 #f2a900; }
+  .call-ctl.hangup i{
+    width:68px; height:68px; border:0; color:#fff;
+    background:linear-gradient(160deg, #e1251b, #c8102e 55%, #8a0b1f);
+    box-shadow:0 14px 30px -10px rgba(200,16,46,.75);
+  }
+  .call-ctl.hangup svg{ width:28px; height:28px; transform:rotate(135deg); }
+  .call-ctl.hangup{ color:#8a0b1f; }
+
+  .call-divider{
+    align-self:center; display:inline-flex; align-items:center; gap:8px;
+    font-size:10.5px; font-weight:800; letter-spacing:.12em; text-transform:uppercase; color:#8a0b1f;
+    padding:4px 0;
+  }
+  .call-divider::before, .call-divider::after{ content:""; width:22px; height:1px; background:#f2a900; }
 
   @media (prefers-reduced-motion: reduce){
     *{ animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important; }
   }
 </style>
+<link rel="stylesheet" href="styles/unilibre.css" />
 </head>
 <body>
 
@@ -435,10 +549,14 @@
 
     <div class="scrim" id="scrim"></div>
     <nav class="drawer" id="drawer">
-      <h2><img class="drawer-mark" src="icons/combarranquilla-mark.png" alt="" />Asistente Combarranquilla</h2>
+      <h2><img class="drawer-mark" src="icons/unilibre-escudo.png" alt="" />Asistente Unilibre</h2>
       <div class="drawer-item" data-action="new">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
         Nueva conversación
+      </div>
+      <div class="drawer-item" data-action="call">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+        Llamar al asistente <span class="tag">Voz</span>
       </div>
       <a class="drawer-item" href="screens/programas/index.html">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2Z"/></svg>
@@ -461,15 +579,17 @@
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14v-2a8 8 0 0 1 16 0v2"/><rect x="2.5" y="14" width="4" height="6" rx="1.5"/><rect x="17.5" y="14" width="4" height="6" rx="1.5"/><path d="M19.5 20a4 4 0 0 1-4 4h-2"/></svg>
         Vista del asesor <span class="tag">Demo</span>
       </a>
-      <div class="drawer-foot">Combarranquilla &middot; Agente de Admisiones</div>
+      <div class="drawer-foot">Universidad Libre &middot; Agente de Admisiones</div>
     </nav>
 
     <header class="topbar">
       <button class="iconbtn" id="menuBtn" aria-label="Abrir menú">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
       </button>
-      <div class="brand"><img src="icons/combarranquilla-logo.png" alt="Combarranquilla" /></div>
-      <div class="topbar-spacer" aria-hidden="true"></div>
+      <div class="brand"><img src="icons/unilibre-escudo.png" alt="" /><span class="brand-name"><b>Universidad Libre</b><small>Colombia</small></span></div>
+      <button class="iconbtn" data-action="call" aria-label="Llamar al asistente">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>
+      </button>
     </header>
 
     <main class="hero" id="hero">
@@ -477,8 +597,10 @@
         <canvas id="orb"></canvas>
       </div>
       <div class="greet">
+        <span class="hi">Admisiones · Universidad Libre</span>
         <h1>¿En qué puedo<br>ayudarte hoy?</h1>
-        <p>Pregúntame por afiliación, subsidios, programas de formación, crédito o recreación, o agenda una cita con un asesor.</p>
+        <p>Pregúntame por carreras, inscripciones, valores de matrícula, descuentos o becas, o agenda una cita con un asesor de admisiones.</p>
+        <button class="call-cta" data-action="call" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg>Llamar al asistente</button>
       </div>
     </main>
 
@@ -495,9 +617,39 @@
         </button>
       </div>
     </footer>
+
+    <!-- Llamada de voz: el aspirante habla, el asistente responde en voz alta -->
+    <section class="call" id="call" aria-hidden="true" aria-label="Llamada con el asistente">
+      <header class="call-top">
+        <img src="icons/unilibre-escudo.png" alt="" />
+        <div><b>Asistente Unilibre</b><span id="callTimer">Llamada de voz · 0:00</span></div>
+        <span class="call-live">En línea</span>
+      </header>
+      <div class="call-stage">
+        <div class="call-orb" id="callOrb" title="Toca para interrumpir"></div>
+        <div class="call-status" id="callStatus">Conectando</div>
+        <div class="call-caption" id="callCaption"></div>
+        <div class="call-hint" id="callHint"></div>
+      </div>
+      <div class="call-controls">
+        <button class="call-ctl" id="callMute" type="button" aria-pressed="false">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2M12 19v4"/></svg></i>
+          <span>Micrófono</span>
+        </button>
+        <button class="call-ctl hangup" id="callHangup" type="button">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z"/></svg></i>
+          <span>Colgar</span>
+        </button>
+        <button class="call-ctl" id="callVoice" type="button" aria-pressed="false">
+          <i><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg></i>
+          <span>Voz</span>
+        </button>
+      </div>
+    </section>
   </div>
 </div>
 
+<script src="js/programas-unilibre.js"></script>
 <script>
 (function(){
   "use strict";
@@ -522,11 +674,11 @@
   "uniform float uTime, uEnergia;",
   "uniform float uVel, uEscala, uRelieve, uBrillo, uPliegue, uGiro;",
   "const vec3 C_FONDO   = vec3(1.000, 1.000, 1.000);",
-  "const vec3 C_NEGRO   = vec3(0.000, 0.230, 0.110);",
-  "const vec3 C_SANGRE  = vec3(0.000, 0.480, 0.240);",
-  "const vec3 C_VIVO    = vec3(0.630, 0.680, 0.160);",
-  "const vec3 C_MAGENTA = vec3(0.880, 0.670, 0.055);",
-  "const vec3 C_LUZ     = vec3(1.000, 0.980, 0.880);",
+  "const vec3 C_NEGRO   = vec3(0.060, 0.020, 0.025);",
+  "const vec3 C_SANGRE  = vec3(0.780, 0.063, 0.180);",
+  "const vec3 C_VIVO    = vec3(0.920, 0.160, 0.120);",
+  "const vec3 C_MAGENTA = vec3(0.950, 0.663, 0.000);",
+  "const vec3 C_LUZ     = vec3(1.000, 0.970, 0.900);",
   "float hash(vec3 p){",
   "  p = fract(p * 0.3183099 + vec3(0.1, 0.2, 0.3));",
   "  p *= 17.0;",
@@ -711,6 +863,15 @@
   EsferaLiquida.prototype.pensando = function(){ this.energiaObjetivo = 1; };
   EsferaLiquida.prototype.reposo = function(){ this.energiaObjetivo = 0; };
   EsferaLiquida.prototype.set = function(k, v){ this.aj[k] = v; };
+  EsferaLiquida.prototype.nivel = function(v){ this.energiaObjetivo = v; };
+  // Libera la animación y el contexto WebGL (la llamada crea su propio orbe y lo cierra al colgar).
+  EsferaLiquida.prototype.detener = function(){
+    if(this.raf) cancelAnimationFrame(this.raf);
+    if(this.onResize) window.removeEventListener('resize', this.onResize);
+    if(this.onVis) document.removeEventListener('visibilitychange', this.onVis);
+    var ext = this.gl && this.gl.getExtension('WEBGL_lose_context');
+    if(ext) ext.loseContext();
+  };
 
   EsferaLiquida.prototype.respaldo = function(){
     var cont = this.canvas.parentElement; this.canvas.remove();
@@ -718,9 +879,9 @@
     d.style.cssText =
       'width:100%;height:100%;border-radius:50%;background:' +
       'radial-gradient(circle at 34% 30%, rgba(255,255,255,.55), transparent 46%),' +
-      'radial-gradient(circle at 62% 68%, rgba(224,171,14,.45), transparent 52%),' +
-      'radial-gradient(circle at 50% 50%, #15934a 0%, #007a3d 62%, #005a2c 100%);' +
-      'box-shadow:0 0 70px rgba(0,122,61,.35);animation:respirar 5.5s ease-in-out infinite;';
+      'radial-gradient(circle at 62% 68%, rgba(242,169,0,.45), transparent 52%),' +
+      'radial-gradient(circle at 50% 50%, #e1251b 0%, #c8102e 62%, #8a0b1f 100%);' +
+      'box-shadow:0 0 70px rgba(200,16,46,.35);animation:respirar 5.5s ease-in-out infinite;';
     var st = document.createElement('style');
     st.textContent = '@keyframes respirar{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}';
     document.head.appendChild(st); cont.appendChild(d);
@@ -772,24 +933,56 @@
   /* =====================================================================
      Base de conocimiento institucional (datos de demostración)
   ===================================================================== */
-  var KB_PROGRAMS = [
-    { id:'enfermeria', nombre:'Auxiliar en Enfermería', facultad:'Escuela de Salud', sedes:['Barranquilla','Sabanalarga','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad','Carné de vacunación'], costoAprox:'Desde $1.150.000 COP / semestre (afiliados cat. A)', aliases:['enfermeria','enfermera','enfermero','auxiliar de enfermeria'] },
-    { id:'farmacia', nombre:'Auxiliar en Servicios Farmacéuticos', facultad:'Escuela de Salud', sedes:['Barranquilla','Soledad'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Salud.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)', aliases:['farmacia','farmaceutico','drogueria','medicamentos'] },
-    { id:'software', nombre:'Técnico en Desarrollo de Software', facultad:'Escuela de Tecnología', sedes:['Barranquilla','Soledad','Malambo'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Tecnología. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $950.000 COP / semestre (afiliados cat. A)', aliases:['sistemas','software','programacion','informatica','desarrollo web'] },
-    { id:'administrativo', nombre:'Auxiliar Administrativo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'], modalidad:'Presencial y virtual', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $820.000 COP / semestre (afiliados cat. A)', aliases:['administracion','administrativo','empresas','negocios','oficina','secretariado'] },
-    { id:'contable', nombre:'Auxiliar Contable y Financiero', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Sabanalarga'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $850.000 COP / semestre (afiliados cat. A)', aliases:['contable','contabilidad','contador','contaduria','financiero'] },
-    { id:'sst', nombre:'Seguridad y Salud en el Trabajo', facultad:'Escuela de Gestión Empresarial', sedes:['Barranquilla','Soledad'], modalidad:'Presencial y virtual', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Gestión Empresarial.', requisitos:['Diploma de bachiller','Documento de identidad'], costoAprox:'Desde $1.050.000 COP / semestre (afiliados cat. A)', aliases:['seguridad y salud','salud en el trabajo','sst','riesgos laborales'] },
-    { id:'infancia', nombre:'Atención Integral a la Primera Infancia', facultad:'Escuela de Educación y Desarrollo Social', sedes:['Barranquilla','Malambo','Puerto Colombia'], modalidad:'Presencial', duracion:'3 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Educación y Desarrollo Social.', requisitos:['Diploma de bachiller','Documento de identidad','Certificado de antecedentes'], costoAprox:'Desde $900.000 COP / semestre (afiliados cat. A)', aliases:['primera infancia','infancia','ninos','preescolar','pedagogia'] },
-    { id:'gastronomia', nombre:'Cocina y Gastronomía', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía. Acepta diploma de bachiller o noveno grado aprobado.', requisitos:['Diploma de bachiller o noveno grado aprobado','Documento de identidad'], costoAprox:'Desde $1.200.000 COP / semestre (afiliados cat. A)', aliases:['cocina','gastronomia','chef','culinaria'] },
-    { id:'turismo', nombre:'Servicios Turísticos y Hoteleros', facultad:'Escuela de Turismo y Gastronomía', sedes:['Barranquilla'], modalidad:'Presencial', duracion:'2 semestres', resumen:'Programa técnico laboral por competencias de la escuela de Turismo y Gastronomía.', requisitos:['Diploma de bachiller','Documento de identidad','Inglés básico'], costoAprox:'Desde $980.000 COP / semestre (afiliados cat. A)', aliases:['turismo','hotel','hoteleria','guia turistico','recepcion'] }
-  ];
-  var SEDES = ['Barranquilla','Soledad','Malambo','Sabanalarga','Puerto Colombia'];
+  /* Oferta real de la seccional Barranquilla: js/programas-unilibre.js */
+  var KB_PROGRAMS = window.UL_PROGRAMS || [];
+  var SEDES = window.UL_SEDES || [];
+  var SEDE_ALIASES = window.UL_SEDE_ALIASES || {};
 
   function strip(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,''); }
 
   /* Backend RAG: responde preguntas libres a partir de documentos institucionales.
      En desarrollo local corre en localhost:8000; al desplegarlo, cambia esta URL. */
-  var RAG_BACKEND_URL = 'http://localhost:8000';
+  var RAG_BACKEND_URL = 'http://127.0.0.1:8000';
+
+  /* Igual que askInstitutionalRag, pero recibe la respuesta a medida que el modelo la
+     escribe (una línea JSON por evento) y llama a onText con el texto acumulado, para que
+     el chat muestre palabras desde el primer segundo en vez de esperar la respuesta
+     completa. Resuelve con { answer, sources } al terminar. */
+  function streamInstitutionalRag(question, onText){
+    return fetch(RAG_BACKEND_URL + '/ask/stream', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question })
+    }).then(function(res){
+      if(!res.ok) throw new Error('backend_error');
+      if(!res.body || !window.TextDecoder) return askInstitutionalRag(question);
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buffer = '', text = '', result = null;
+      function handle(line){
+        if(!line.trim()) return;
+        var ev = JSON.parse(line);
+        if(ev.type === 'token'){ text += ev.text; onText(text); }
+        else if(ev.type === 'done'){ result = { answer: ev.answer, sources: ev.sources || [] }; }
+        else if(ev.type === 'error'){ throw new Error(ev.detail || 'backend_error'); }
+      }
+      function pump(){
+        return reader.read().then(function(chunk){
+          if(chunk.done){
+            handle(buffer);
+            if(!result) throw new Error('stream_incomplete');
+            return result;
+          }
+          buffer += decoder.decode(chunk.value, { stream: true });
+          var lines = buffer.split('\n');
+          buffer = lines.pop();
+          lines.forEach(handle);
+          return pump();
+        });
+      }
+      return pump();
+    });
+  }
 
   function askInstitutionalRag(question){
     return fetch(RAG_BACKEND_URL + '/ask', {
@@ -803,12 +996,12 @@
   }
 
   var TOPIC_KEYWORDS = {
-    financiacion: ['matricula','pago','costo','precio','cuota','tarifa','financiacion','credito','beca','descuento','subsidio','categoria','afiliad'],
-    requisitos: ['requisito','documento','inscrib','saber 11','icfes'],
-    calendario: ['calendario','fecha','cuando puedo','inicio de clases','semestre','cohorte'],
-    modalidad: ['virtual','presencial','modalidad']
+    financiacion: ['matricula','pago','costo','cuesta','vale','precio','valor','tarifa','financiacion','credito','icetex','beca','descuento'],
+    requisitos: ['requisito','documento','inscrib','saber 11','icfes','puntaje','admision','examen'],
+    calendario: ['calendario','fecha','cuando puedo','cuando abren','inicio de clases','admitidos','plazo'],
+    modalidad: ['virtual','presencial','modalidad','jornada','nocturn','diurn','horario']
   };
-  var HUMAN_KEYWORDS = ['hablar con alguien','hablar con un asesor','asesor','cita','agendar','llamada','entrevista','reunion','humano','contactar'];
+  var HUMAN_KEYWORDS = ['hablar con alguien','hablar con un asesor','asesor','agendar','una cita','llamada','reunion','humano','contactar'];
   var VOCATIONAL_KEYWORDS = ['no se que estudiar','no se que carrera','orientacion','orientarme','ayudenme a elegir','que carrera me recomienda','no tengo claro'];
 
   function findPrograms(text){
@@ -817,28 +1010,30 @@
     });
   }
   function findSedes(text){
-    return SEDES.filter(function(s){ return text.indexOf(strip(s)) > -1; });
+    return SEDES.filter(function(s){
+      return (SEDE_ALIASES[s]||[strip(s)]).some(function(a){ return text.indexOf(a) > -1; });
+    });
   }
   function topicLabel(t){
     return { financiacion:'Información financiera', requisitos:'Requisitos de admisión', calendario:'Fechas y calendario', modalidad:'Modalidad de estudio' }[t] || null;
   }
   function genericTopicAnswer(topic){
     return {
-      financiacion:'En Combarranquilla la tarifa depende de tu categoría de afiliación: las categorías A y B tienen tarifa subsidiada, y además hay crédito social para financiar tu programa. Cuéntame qué programa te interesa y te doy el valor aproximado.',
-      requisitos:'Los requisitos generales son documento de identidad y diploma de bachiller (algunos programas aceptan noveno grado aprobado). Si eres afiliado, trae tu certificado de afiliación para acceder a la tarifa subsidiada. ¿De qué programa quieres los requisitos exactos?',
-      calendario:'Normalmente hay dos cohortes al año y las inscripciones abren varias semanas antes de cada una. Dime el programa y te confirmo fechas específicas.',
-      modalidad:'Varios programas se ofrecen en modalidad presencial y algunos también en virtual. ¿Qué programa te interesa para confirmarte la modalidad?'
+      financiacion:'El valor de la matrícula depende del programa; la inscripción a pregrado es gratuita. Puedes financiarte con ICETEX, entidades en convenio o crédito directo con la Universidad, y hay descuentos (por ejemplo 20 % para mayores de 25 años en jornada nocturna). ¿Qué programa te interesa para darte el valor?',
+      requisitos:'Para inscribirte necesitas el formulario en línea (es gratuito) y tu documento de identidad; en Salud también el certificado Saber 11. Luego presentas la entrevista de admisión. ¿De qué programa quieres los requisitos exactos?',
+      calendario:'Las inscripciones para 2027-1 abrieron en septiembre de 2026 y cada facultad publica su calendario. Dime el programa y te confirmo las fechas.',
+      modalidad:'Casi todos los programas son presenciales; Contaduría Pública también es virtual. Derecho, Contaduría, Ingeniería Industrial, Negocios Internacionales y Administración Logística tienen jornada nocturna. ¿Qué programa te interesa?'
     }[topic];
   }
 
   /* =====================================================================
      Agendamiento — tipo de atención, modalidad, franja horaria, confirmación
   ===================================================================== */
-  var ATTENTION_TYPES = ['Admisiones','Asesoría académica','Orientación vocacional','Afiliación y subsidios','Crédito social','Información financiera'];
+  var ATTENTION_TYPES = ['Admisiones','Orientación vocacional','Información financiera','Becas y descuentos','Transferencias y homologaciones','Asesoría académica'];
   var ADVISORS = {
     'Admisiones':['Laura Méndez','Andrés Rojas'], 'Información financiera':['Camila Torres'],
     'Orientación vocacional':['Diego Salazar'], 'Asesoría académica':['Paula Nieto'],
-    'Afiliación y subsidios':['Mónica Herrera'], 'Crédito social':['Camila Torres']
+    'Becas y descuentos':['Camila Torres'], 'Transferencias y homologaciones':['Mónica Herrera']
   };
   var WEEKDAYS = ['domingo','lunes','martes','miércoles','jueves','viernes','sábado'];
   var MONTHS = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
@@ -1003,9 +1198,10 @@
      Orientación vocacional — cuando el aspirante no sabe qué estudiar
   ===================================================================== */
   var AREA_MAP = {
-    'Salud':['enfermeria','farmacia'], 'Tecnología':['software'],
-    'Administración y negocios':['administrativo','contable'], 'Seguridad laboral':['sst'],
-    'Educación e infancia':['infancia'], 'Turismo y gastronomía':['gastronomia','turismo']
+    'Salud y bienestar':['medicina','fisioterapia','instrumentacion'], 'Laboratorio y ciencia':['bacteriologia','microbiologia'],
+    'Leyes y justicia':['derecho'], 'Tecnología':['sistemas'],
+    'Procesos e industria':['industrial','logistica'], 'Números y finanzas':['contaduria'],
+    'Comercio internacional':['negocios','logistica']
   };
   function startVocational(){
     addMsg('bot','Perfecto, te ayudo a orientarte. ¿Qué área te llama más la atención?');
@@ -1021,7 +1217,7 @@
     typingThenRespond(function(){
       var progs = KB_PROGRAMS.filter(function(p){ return AREA_MAP[area].indexOf(p.id)>-1; });
       var names = progs.map(function(p){ return p.nombre; }).join(' y ');
-      addMsg('bot','Dentro de esa área, en Combarranquilla suelen encajar bien '+names+'. '+(progs[0]?progs[0].resumen:''));
+      addMsg('bot','Dentro de esa área, en la Universidad Libre Barranquilla te pueden encajar '+names+'. '+(progs[0]?progs[0].nombre+': '+progs[0].resumen:''));
       addChipCard(['Ver estos programas','Agendar una orientación'], function(choice){
         addMsg('user', choice);
         if(choice==='Ver estos programas'){
@@ -1064,17 +1260,18 @@
       return;
     }
 
-    if(programs.length){
+    /* Programa + pregunta concreta (requisitos, fechas, jornada): la respuesta detallada
+       está en los documentos, así que va al RAG; la ficha fija solo cubre el resumen y el valor. */
+    if(programs.length && (!topic || topic==='financiacion')){
       var p = programs[0];
-      var lines = ['Sí, tenemos '+p.nombre+' ('+p.facultad+'), modalidad '+p.modalidad+', duración '+p.duracion+'.'];
+      var lines = ['Sí, en Barranquilla tenemos '+p.nombre+' (Facultad de '+p.facultad+'): '+p.duracion+', jornada '+p.jornada.toLowerCase()+', título de '+p.titulo+'.'];
       if(sedes.length){
         var tieneSede = p.sedes.indexOf(sedes[0]) > -1;
-        lines.push(tieneSede ? 'Se dicta en la sede '+sedes[0]+'.' : 'Por ahora no se dicta en '+sedes[0]+'. Sedes disponibles: '+p.sedes.join(', ')+'.');
+        lines.push(tieneSede ? 'Se dicta en la '+sedes[0]+'.' : 'No se dicta en la '+sedes[0]+'; se dicta en la '+p.sedes.join(' y la ')+'.');
       }else{
-        lines.push('Sedes disponibles: '+p.sedes.join(', ')+'.');
+        lines.push('Se dicta en la '+p.sedes.join(' y la ')+'.');
       }
-      if(topic==='financiacion') lines.push('Valor aproximado: '+p.costoAprox+' (tarifa de referencia; varía según tu categoría de afiliación).');
-      if(topic==='requisitos') lines.push('Requisitos: '+p.requisitos.join(', ')+'.');
+      if(topic==='financiacion') lines.push('El valor de matrícula 2026 es de '+p.costo+' por semestre; el valor definitivo es el de tu recibo y pueden aplicar descuentos. La inscripción es gratuita.');
 
       typingThenRespond(function(){
         addMsg('bot', lines.join(' '));
@@ -1088,27 +1285,47 @@
     if(isHuman){
       typingThenRespond(function(){
         addMsg('bot','Con gusto te conecto con un asesor. Vamos a agendar la cita.');
-        var tipoSugerido = /subsidi|afili|cuota monetaria|vivienda|cesante|desemple/.test(text) ? 'Afiliación y subsidios'
-          : (/credito|prestamo/.test(text) ? 'Crédito social'
+        var tipoSugerido = /beca|descuento/.test(text) ? 'Becas y descuentos'
+          : (/transferencia|homolog|traslado|reintegro/.test(text) ? 'Transferencias y homologaciones'
           : (topic==='financiacion' ? 'Información financiera' : (topic==='requisitos' ? 'Admisiones' : 'Asesoría académica')));
         startScheduling(tipoSugerido, { necesidad:raw });
       });
       return;
     }
 
-    /* Las preguntas de tema (tarifas, subsidios, requisitos, fechas...) van primero a
-       los documentos de Combarranquilla; la respuesta genérica solo se usa si no hay datos. */
+    /* Las preguntas de tema (matrícula, requisitos, fechas, jornadas...) van primero a
+       los documentos de la Universidad Libre; la respuesta genérica solo se usa si no hay datos. */
     var typing = addTyping();
+    var live = null; // burbuja que se va llenando mientras llega la respuesta
     function fallbackToHuman(){
       typing.remove();
+      if(live){ live.remove(); live = null; }
       if(topic){ addMsg('bot', genericTopicAnswer(topic)); return; }
-      addMsg('bot','No tengo información suficiente para darte una respuesta precisa sobre eso. Puedo ayudarte a agendar una cita con un asesor de Combarranquilla.');
+      addMsg('bot','No tengo información suficiente para darte una respuesta precisa sobre eso. Puedo ayudarte a agendar una cita con un asesor de admisiones de la Universidad Libre.');
       startScheduling('Asesoría académica', { necesidad:raw });
     }
-    askInstitutionalRag(raw).then(function(data){
-      typing.remove();
+    streamInstitutionalRag(raw, function(textSoFar){
+      if(!live){
+        typing.remove();
+        live = document.createElement('div');
+        live.className = 'msg bot';
+        live.innerHTML = '<div class="bot-avatar thinking"></div><div class="bubble"></div>';
+        thread.appendChild(live);
+      }
+      live.querySelector('.bubble').textContent = textSoFar;
+      thread.scrollTop = thread.scrollHeight;
+    }).then(function(data){
       if(data && data.answer && data.sources && data.sources.length){
-        addRagAnswer(data.answer, data.sources);
+        if(live){
+          // El texto final ya viene procesado (siglas expandidas): reemplaza al parcial.
+          live.querySelector('.bubble').textContent = data.answer;
+          live.querySelector('.bot-avatar').classList.remove('thinking');
+          pushTranscript('bot', data.answer);
+          addSources(data.sources);
+        }else{
+          typing.remove();
+          addRagAnswer(data.answer, data.sources); // respuesta desde caché: llega completa
+        }
       }else{
         fallbackToHuman();
       }
@@ -1149,6 +1366,9 @@
 
   function addRagAnswer(text, sources){
     addMsg('bot', text);
+    addSources(sources);
+  }
+  function addSources(sources){
     if(sources && sources.length){
       var wrap = document.createElement('div');
       wrap.className = 'bubble-sources';
@@ -1252,6 +1472,335 @@
     app.classList.remove('drawer-open');
     state.lastMessages = [];
     saveState();
+  });
+
+  /* =====================================================================
+     Llamada de voz con el asistente
+     Escucha con el reconocimiento de voz del navegador, consulta los documentos
+     de la Universidad (mismo backend RAG, en streaming) y responde en voz alta,
+     frase por frase a medida que llega el texto. Al colgar, la conversación
+     queda escrita en el chat.
+  ===================================================================== */
+  var SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+  var callEl = document.getElementById('call');
+  var callStatusEl = document.getElementById('callStatus');
+  var callCaptionEl = document.getElementById('callCaption');
+  var callHintEl = document.getElementById('callHint');
+  var callTimerEl = document.getElementById('callTimer');
+  var callMuteBtn = document.getElementById('callMute');
+  var callVoiceBtn = document.getElementById('callVoice');
+  var CALL_GREETING = 'Hola, soy el asistente de admisiones de la Universidad Libre, seccional Barranquilla. ¿En qué te puedo ayudar?';
+  var CALL_OFFER = 'Si quieres, al colgar te ayudo a agendar una cita con un asesor de admisiones.';
+
+  var call = null; // estado de la llamada en curso
+  // ¿Sigue vigente este turno de esta llamada? Evita que una respuesta tardía de un turno
+  // interrumpido, o de una llamada ya colgada, se cuele en la conversación actual.
+  function alive(c, turn){ return call === c && c.turn === turn; }
+
+  function callSetStatus(mode, label){
+    callStatusEl.textContent = label;
+    callEl.classList.toggle('is-listening', mode==='listening');
+    if(call && call.orb) call.orb.nivel({ listening:.3, thinking:.75, speaking:1, idle:0 }[mode] || 0);
+  }
+  function callCaption(you, bot, interim){
+    callCaptionEl.innerHTML = '';
+    if(you){
+      var y = document.createElement('div');
+      y.className = 'you' + (interim ? ' interim' : '');
+      y.textContent = '“' + you + '”';
+      callCaptionEl.appendChild(y);
+    }
+    if(bot){
+      var b = document.createElement('div');
+      b.className = 'bot';
+      b.textContent = bot;
+      callCaptionEl.appendChild(b);
+    }
+  }
+  function callShowError(msg){
+    callCaptionEl.innerHTML = '';
+    var e = document.createElement('div');
+    e.className = 'call-error';
+    e.textContent = msg;
+    callCaptionEl.appendChild(e);
+    callHintEl.textContent = '';
+    callSetStatus('idle', 'Sin micrófono');
+  }
+
+  /* ---------- Voz del asistente ---------- */
+  var callVoice = null;
+  function pickSpanishVoice(){
+    if(!window.speechSynthesis) return null;
+    var voices = speechSynthesis.getVoices().filter(function(v){ return /^es(-|_|$)/i.test(v.lang); });
+    if(!voices.length) return null;
+    var prefs = ['es-CO','es-MX','es-US','es-419','es-ES'];
+    voices.sort(function(a, b){
+      function score(v){
+        var i = prefs.indexOf(v.lang.replace('_','-'));
+        return (i === -1 ? 9 : i) - (/natural|online|neural/i.test(v.name) ? 10 : 0);
+      }
+      return score(a) - score(b);
+    });
+    return voices[0];
+  }
+  if(window.speechSynthesis){
+    callVoice = pickSpanishVoice();
+    speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', function(){ callVoice = pickSpanishVoice(); });
+  }
+
+  // Adapta el texto escrito para que suene natural al leerlo en voz alta.
+  function speakable(text){
+    return text
+      .replace(/^\s*[-•]\s*/gm, '')
+      .replace(/\$\s?([\d.]+)\s*COP/g, '$1 pesos')
+      .replace(/\$\s?([\d.]+)/g, '$1 pesos')
+      .replace(/\bCOP\b/g, 'pesos')
+      .replace(/\b(\d{4})-1\b/g, 'primer semestre de $1')
+      .replace(/\b(\d{4})-2\b/g, 'segundo semestre de $1')
+      .replace(/([\w.-]+)@([\w.-]+)/g, function(_, u, d){
+        return u.replace(/_/g, ' guion bajo ').replace(/\./g, ' punto ') + ' arroba ' + d.replace(/\./g, ' punto ');
+      })
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function callSpeak(text){
+    if(!call || !text.trim()) return;
+    call.speechQueue.push(text);
+    callPumpSpeech();
+  }
+  function callPumpSpeech(){
+    if(!call || call.speaking) return;
+    if(!call.speechQueue.length){
+      if(call.streamDone) callTurnFinished();
+      return;
+    }
+    var text = call.speechQueue.shift();
+    if(!call.voiceOn || !window.speechSynthesis){ callPumpSpeech(); return; }
+    var u = new SpeechSynthesisUtterance(speakable(text));
+    u.lang = (callVoice && callVoice.lang) || 'es-CO';
+    if(callVoice) u.voice = callVoice;
+    u.rate = 1.05;
+    var c = call, turn = call.turn;
+    u.onend = u.onerror = function(){
+      if(!alive(c, turn)) return;
+      call.speaking = false;
+      callPumpSpeech();
+    };
+    call.speaking = true;
+    callSetStatus('speaking', 'Hablando');
+    callHintEl.textContent = 'Toca el orbe para interrumpir';
+    speechSynthesis.speak(u);
+  }
+
+  /* ---------- Oído del asistente ---------- */
+  function callListen(){
+    if(!call || call.muted) return;
+    try{ if(call.rec) call.rec.abort(); }catch(e){}
+    var rec = new SpeechRec();
+    rec.lang = 'es-CO';
+    rec.interimResults = true;
+    rec.continuous = false;
+    rec.maxAlternatives = 1;
+    var heard = false;
+    rec.onresult = function(ev){
+      var interim = '', finalText = '';
+      for(var i = ev.resultIndex; i < ev.results.length; i++){
+        if(ev.results[i].isFinal) finalText += ev.results[i][0].transcript;
+        else interim += ev.results[i][0].transcript;
+      }
+      if(interim) callCaption(interim, null, true);
+      if(finalText.trim()){
+        heard = true;
+        callHandleUtterance(finalText.trim());
+      }
+    };
+    rec.onerror = function(ev){
+      if(!call) return;
+      if(ev.error === 'not-allowed' || ev.error === 'service-not-allowed'){
+        call.rec = null;
+        callShowError('Necesito permiso para usar tu micrófono. Actívalo en la barra de direcciones del navegador y vuelve a llamar.');
+      }else if(ev.error === 'network'){
+        call.rec = null;
+        callShowError('Tu navegador no permite el reconocimiento de voz (Brave, por ejemplo, lo bloquea). Abre esta página en Google Chrome o Microsoft Edge para llamar.');
+      }
+    };
+    rec.onend = function(){
+      // Silencio sin frase: vuelve a escuchar mientras la llamada siga en espera.
+      if(call && call.rec === rec && !heard && call.mode === 'listening' && !call.muted) callListen();
+    };
+    call.rec = rec;
+    call.mode = 'listening';
+    callSetStatus('listening', 'Escuchando');
+    callHintEl.textContent = 'Habla cuando quieras';
+    try{ rec.start(); }catch(e){}
+  }
+
+  /* ---------- Un turno de conversación ---------- */
+  function callHandleUtterance(text){
+    if(!call) return;
+    call.mode = 'thinking';
+    try{ call.rec.stop(); }catch(e){}
+    call.turn++;
+    call.speechQueue = [];
+    call.streamDone = false;
+    call.log.push({ role:'user', text:text });
+    callCaption(text, null);
+    callSetStatus('thinking', 'Pensando');
+    callHintEl.textContent = '';
+
+    var norm = strip(text);
+    if(HUMAN_KEYWORDS.some(function(k){ return norm.indexOf(k) > -1; })){
+      call.wantsAppointment = text;
+      callReply('Con gusto. Cuando cuelgues te dejo listo el agendamiento de tu cita en el chat. ¿Hay algo más en lo que te pueda ayudar mientras tanto?');
+      return;
+    }
+
+    var c = call, turn = call.turn, spokenUpTo = 0, lastText = '';
+    function speakCompleteSentences(textSoFar, flush){
+      lastText = textSoFar;
+      var rest = textSoFar.slice(spokenUpTo);
+      // Frase completa = hasta un . ! ? seguido de espacio, o hasta un salto de línea.
+      // (Un punto dentro de "$21.526.000" no corta, porque lo sigue un dígito.)
+      var re = /^[\s\S]*?[.!?](?=\s)|^[\s\S]*?\n/, m, consumed = 0;
+      while((m = rest.slice(consumed).match(re))){
+        callSpeak(m[0]);
+        consumed += m[0].length;
+      }
+      if(flush && rest.slice(consumed).trim()){ callSpeak(rest.slice(consumed)); consumed = rest.length; }
+      spokenUpTo += consumed;
+    }
+    streamInstitutionalRag(text, function(textSoFar){
+      if(!alive(c, turn)) return;
+      callCaption(text, textSoFar);
+      speakCompleteSentences(textSoFar, false);
+    }).then(function(data){
+      if(!alive(c, turn)) return;
+      var found = data && data.answer && data.sources && data.sources.length;
+      if(found){
+        speakCompleteSentences(lastText || data.answer, true);
+        callCaption(text, data.answer);
+        call.log.push({ role:'bot', text:data.answer });
+        call.streamDone = true;
+        callPumpSpeech();
+      }else{
+        call.speechQueue = [];
+        call.wantsAppointment = call.wantsAppointment || text;
+        callReply('No encuentro esa información en los documentos de la Universidad. ' + CALL_OFFER);
+      }
+    }).catch(function(){
+      if(!alive(c, turn)) return;
+      call.wantsAppointment = call.wantsAppointment || text;
+      callReply('No pude consultar la información en este momento. ' + CALL_OFFER);
+    });
+  }
+  // Respuesta fija (sin consultar documentos): se muestra, se registra y se dice.
+  function callReply(text){
+    call.log.push({ role:'bot', text:text });
+    callCaption(call.log.length > 1 ? call.log[call.log.length-2].text : null, text);
+    call.streamDone = true;
+    callSpeak(text);
+  }
+  function callTurnFinished(){
+    if(!call) return;
+    call.speaking = false;
+    if(call.muted){ callSetStatus('idle', 'Micrófono silenciado'); callHintEl.textContent = 'Activa el micrófono para seguir hablando'; return; }
+    callListen();
+  }
+
+  /* ---------- Abrir / colgar ---------- */
+  function fmtCallTime(sec){ return Math.floor(sec/60) + ':' + ('0' + (sec % 60)).slice(-2); }
+
+  function startCall(){
+    if(call) return;
+    app.classList.remove('drawer-open');
+    app.classList.add('in-call');
+    callEl.setAttribute('aria-hidden', 'false');
+    call = { turn:0, log:[], speechQueue:[], speaking:false, streamDone:false, muted:false,
+             voiceOn:true, mode:'idle', rec:null, wantsAppointment:null, started:Date.now(), orb:null };
+    callMuteBtn.classList.remove('is-off'); callVoiceBtn.classList.remove('is-off');
+    callCaption(null, null);
+    // Canvas nuevo en cada llamada: el anterior pierde su contexto WebGL al colgar.
+    var orbHolder = document.getElementById('callOrb');
+    orbHolder.innerHTML = '<canvas></canvas>';
+    call.orb = new EsferaLiquida(orbHolder.firstChild, AJUSTES_ORBE);
+    call.timer = setInterval(function(){
+      callTimerEl.textContent = 'Llamada de voz · ' + fmtCallTime(Math.floor((Date.now() - call.started)/1000));
+    }, 1000);
+    callTimerEl.textContent = 'Llamada de voz · 0:00';
+
+    if(!SpeechRec){
+      callShowError('Tu navegador no permite llamadas de voz. Abre esta página en Google Chrome o Microsoft Edge.');
+      return;
+    }
+    // El saludo se dice primero; al terminar, el asistente empieza a escuchar.
+    call.log.push({ role:'bot', text:CALL_GREETING });
+    callCaption(null, CALL_GREETING);
+    call.streamDone = true;
+    callSpeak(CALL_GREETING);
+  }
+
+  function endCall(){
+    if(!call) return;
+    var ended = call;
+    call = null;
+    clearInterval(ended.timer);
+    try{ if(ended.rec) ended.rec.abort(); }catch(e){}
+    if(window.speechSynthesis) speechSynthesis.cancel();
+    if(ended.orb) ended.orb.detener();
+    app.classList.remove('in-call');
+    callEl.setAttribute('aria-hidden', 'true');
+    callEl.classList.remove('is-listening');
+
+    // Lo conversado queda en el chat (y en el resumen para el asesor).
+    var spoken = ended.log.filter(function(m, i){ return !(i === 0 && m.text === CALL_GREETING); });
+    if(spoken.length || ended.wantsAppointment){
+      app.classList.add('chatting');
+      var div = document.createElement('div');
+      div.className = 'call-divider';
+      div.textContent = 'Llamada con el asistente · ' + fmtCallTime(Math.floor((Date.now() - ended.started)/1000));
+      thread.appendChild(div);
+      spoken.forEach(function(m){ addMsg(m.role, m.text); });
+      if(ended.wantsAppointment){
+        state.profile.necesidad = ended.wantsAppointment;
+        saveState();
+        startScheduling('Admisiones', { necesidad:ended.wantsAppointment });
+      }
+    }
+  }
+
+  // Tocar el orbe mientras habla: lo interrumpe y vuelve a escuchar.
+  document.getElementById('callOrb').addEventListener('click', function(){
+    if(!call || call.mode === 'listening') return;
+    call.turn++;
+    call.speechQueue = [];
+    call.speaking = false;
+    if(window.speechSynthesis) speechSynthesis.cancel();
+    if(!call.muted) callListen();
+  });
+  callMuteBtn.addEventListener('click', function(){
+    if(!call) return;
+    call.muted = !call.muted;
+    callMuteBtn.classList.toggle('is-off', call.muted);
+    callMuteBtn.setAttribute('aria-pressed', String(call.muted));
+    if(call.muted){
+      call.mode = 'idle';
+      try{ if(call.rec) call.rec.abort(); }catch(e){}
+      if(!call.speaking){ callSetStatus('idle', 'Micrófono silenciado'); callHintEl.textContent = 'Activa el micrófono para seguir hablando'; }
+    }else if(!call.speaking && SpeechRec){
+      callListen();
+    }
+  });
+  callVoiceBtn.addEventListener('click', function(){
+    if(!call) return;
+    call.voiceOn = !call.voiceOn;
+    callVoiceBtn.classList.toggle('is-off', !call.voiceOn);
+    callVoiceBtn.setAttribute('aria-pressed', String(!call.voiceOn));
+    if(!call.voiceOn && window.speechSynthesis){ speechSynthesis.cancel(); }
+  });
+  document.getElementById('callHangup').addEventListener('click', endCall);
+  document.querySelectorAll('[data-action="call"]').forEach(function(btn){
+    btn.addEventListener('click', startCall);
   });
 
   /* ---------- Consumir una pregunta enviada desde otra pantalla ---------- */

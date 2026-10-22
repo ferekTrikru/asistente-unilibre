@@ -7,8 +7,10 @@ Uso:
 """
 
 import argparse
+import bisect
 import glob
 import os
+import re
 import zipfile
 from xml.etree import ElementTree
 
@@ -56,10 +58,26 @@ def _load_docx(path):
     return Document(page_content="\n".join(lines).strip(), metadata={"source": path})
 
 
+_PAGE_NOISE = re.compile(r"^\s*(P[aá]gina\s+\d+|\d{1,3})\s*$", re.MULTILINE)
+
+
+def _load_pdf(path):
+    """Une todas las páginas del PDF en un solo documento: si se cargan por página, una
+    sección que cruza el salto de página (ej. un calendario) queda partida y el fragmento
+    pierde el título que dice de qué programa habla. Se guarda dónde empieza cada página
+    para poder citar la página de cada fragmento."""
+    pages = PyMuPDFLoader(path).load()
+    text, page_starts = "", []
+    for page in pages:
+        page_starts.append(len(text))
+        text += _PAGE_NOISE.sub("", page.page_content).strip() + "\n\n"
+    return Document(page_content=text.strip(), metadata={"source": path, "page_starts": page_starts})
+
+
 def load_documents():
     documents = []
     for pdf_path in sorted(glob.glob(os.path.join(config.DATA_PATH, "*.pdf"))):
-        documents.extend(PyMuPDFLoader(pdf_path).load())
+        documents.append(_load_pdf(pdf_path))
     for docx_path in sorted(glob.glob(os.path.join(config.DATA_PATH, "*.docx"))):
         if not os.path.basename(docx_path).startswith("~$"):  # archivos temporales de Word
             documents.append(_load_docx(docx_path))
@@ -84,8 +102,8 @@ def _split_markdown(doc):
 
 def split_documents(documents):
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=2000,
-        chunk_overlap=300,
+        chunk_size=1000,
+        chunk_overlap=200,
         length_function=len,
         separators=["\n\n", "\n", ". ", " ", ""],
     )
@@ -95,7 +113,20 @@ def split_documents(documents):
             prepared.extend(_split_markdown(doc))
         else:
             prepared.append(doc)
-    chunks = splitter.split_documents(prepared)
+    chunks = []
+    for doc in prepared:
+        page_starts = doc.metadata.pop("page_starts", None)
+        if page_starts is None:
+            chunks.extend(splitter.split_documents([doc]))
+            continue
+        # PDF unido: cada fragmento se etiqueta con la página donde empieza.
+        offset = 0
+        for piece in splitter.split_text(doc.page_content):
+            start = doc.page_content.find(piece[:200], offset)
+            if start >= 0:
+                offset = start + 1
+            page = max(bisect.bisect_right(page_starts, max(start, 0)) - 1, 0)
+            chunks.append(Document(page_content=piece, metadata={**doc.metadata, "page": page}))
     return enrich_metadata(chunks)
 
 

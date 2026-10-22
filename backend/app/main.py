@@ -1,4 +1,9 @@
+import json
+import logging
+import threading
+
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 
@@ -6,9 +11,10 @@ from . import config, db
 from .call_service import schedule_appointment_call
 from .email_service import send_appointment_email
 from .embeddings import get_embedding_function, get_qdrant_client
-from .rag_engine import answer_question
+from . import llm
+from .rag_engine import answer_question, answer_question_stream
 
-app = FastAPI(title="Asistente Combarranquilla — Backend RAG")
+app = FastAPI(title="Asistente Unilibre — Backend RAG")
 
 app.add_middleware(
     CORSMiddleware,
@@ -21,6 +27,19 @@ app.add_middleware(
 @app.on_event("startup")
 def _on_startup():
     db.init_db()
+    # Precarga en segundo plano: el modelo de embeddings, la base vectorial y el LLM
+    # tardan en cargarse; así la primera pregunta del día no paga esa espera.
+    threading.Thread(target=_warm_up, daemon=True).start()
+
+
+def _warm_up():
+    try:
+        embeddings, _ = _get_resources()
+        embeddings.embed_query("precarga")
+        llm.warm_up()
+        logging.getLogger("uvicorn.error").info("Precarga lista: embeddings y modelo en memoria.")
+    except Exception as exc:  # el backend sigue funcionando; solo se pierde la precarga
+        logging.getLogger("uvicorn.error").warning("No se pudo precargar: %s", exc)
 
 
 _embeddings = None
@@ -55,6 +74,22 @@ def ask(payload: AskRequest):
     embeddings, qdrant_client = _get_resources()
     result = answer_question(payload.question, embeddings, qdrant_client)
     return AskResponse(**result)
+
+
+@app.post("/ask/stream")
+def ask_stream(payload: AskRequest):
+    """Igual que /ask, pero envía la respuesta a medida que se escribe (una línea JSON
+    por evento), para que el chat muestre texto en vez de esperar la respuesta completa."""
+    embeddings, qdrant_client = _get_resources()
+
+    def events():
+        try:
+            for event in answer_question_stream(payload.question, embeddings, qdrant_client):
+                yield json.dumps(event, ensure_ascii=False) + "\n"
+        except Exception as exc:
+            yield json.dumps({"type": "error", "detail": str(exc)}, ensure_ascii=False) + "\n"
+
+    return StreamingResponse(events(), media_type="application/x-ndjson")
 
 
 class AppointmentRequest(BaseModel):

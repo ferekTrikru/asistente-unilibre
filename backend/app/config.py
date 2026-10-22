@@ -10,7 +10,7 @@ OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "llama3.1:8b")
 QDRANT_URL = os.environ.get("QDRANT_URL", "")
 QDRANT_API_KEY = os.environ.get("QDRANT_API_KEY", "")
 QDRANT_LOCAL_PATH = os.environ.get("QDRANT_LOCAL_PATH", "./qdrant_data")
-COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "admisiones_combarranquilla")
+COLLECTION_NAME = os.environ.get("COLLECTION_NAME", "admisiones_unilibre")
 
 EMBEDDING_MODEL = os.environ.get("EMBEDDING_MODEL", "sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
 EMBEDDING_DIM = 384

@@ -1,20 +1,27 @@
 {
-  "general_context": "Combarranquilla es una Caja de Compensación Familiar que atiende a trabajadores afiliados, sus familias, pensionados, independientes y público general en Barranquilla y municipios del Atlántico (Soledad, Malambo, Sabanalarga, Puerto Colombia). Ofrece subsidios (cuota monetaria, vivienda, protección al cesante), formación para el trabajo, crédito social, recreación, turismo y programas sociales. Las tarifas de los servicios dependen de la categoría de afiliación (A, B o C).",
+  "general_context": "La Universidad Libre de Colombia es una universidad privada, laica y sin ánimo de lucro, con acreditación institucional de alta calidad, sede principal en Bogotá y seccionales en Barranquilla, Cali, Pereira, Cúcuta, Cartagena y El Socorro. Su lema es Scientia Fons Libertatis (la ciencia es fuente de libertad). La seccional Barranquilla tiene dos sedes: la Sede Principal (Km 7, Antigua Vía a Puerto Colombia) y la Sede Centro (Carrera 46 n.º 48-170). La inscripción a pregrado es gratuita y se hace en línea por SIUL. Los valores de matrícula cambian cada año y por programa; el valor definitivo es el del recibo de matrícula.",
   "glossary": {
-    "CCF": "Caja de Compensación Familiar",
-    "SMMLV": "salario mínimo mensual legal vigente",
-    "MPC": "Mecanismo de Protección al Cesante",
-    "PILA": "Planilla Integrada de Liquidación de Aportes",
-    "PQRS": "peticiones, quejas, reclamos y sugerencias",
-    "VIS": "vivienda de interés social",
-    "SST": "Seguridad y Salud en el Trabajo",
-    "RUT": "Registro Único Tributario"
+    "SNIES": "Sistema Nacional de Información de la Educación Superior",
+    "SIUL": "Sistema de Información de la Universidad Libre",
+    "MEN": "Ministerio de Educación Nacional",
+    "CNA": "Consejo Nacional de Acreditación",
+    "ICETEX": "Instituto Colombiano de Crédito Educativo y Estudios Técnicos en el Exterior",
+    "ORI": "Oficina de Relaciones Interinstitucionales",
+    "CLEUL": "Centro de Lenguas Extranjeras de la Universidad Libre",
+    "SIBUL": "Sistema de Bibliotecas de la Universidad Libre",
+    "PQRSF": "peticiones, quejas, reclamos, sugerencias y felicitaciones",
+    "CEAC": "Facultad de Ciencias Económicas, Administrativas y Contables",
+    "EPS": "Entidad Promotora de Salud",
+    "PSE": "Pagos Seguros en Línea",
+    "COIL": "Collaborative Online International Learning"
   },
   "relations": {
-    "categoría": "La categoría de afiliación depende del salario del trabajador: A hasta 2 SMMLV, B más de 2 y hasta 4 SMMLV, C más de 4 SMMLV.",
-    "categoria": "La categoría de afiliación depende del salario del trabajador: A hasta 2 SMMLV, B más de 2 y hasta 4 SMMLV, C más de 4 SMMLV.",
-    "subsidio": "En Combarranquilla hay varios subsidios distintos: cuota monetaria (subsidio familiar en dinero), subsidio de vivienda y protección al cesante (desempleo). Responde sobre el que mencione la pregunta.",
-    "desempleo": "El subsidio de desempleo corresponde al Mecanismo de Protección al Cesante.",
-    "cuota monetaria": "La cuota monetaria es el subsidio familiar en dinero que se paga mensualmente por cada persona a cargo que cumpla los requisitos."
+    "icfes": "Las pruebas ICFES son las Pruebas Saber 11. Para Medicina en Barranquilla, con 330 puntos o más en el puntaje global la admisión es automática.",
+    "saber 11": "Para Medicina en Barranquilla la selección se hace por el puntaje global de Saber 11: con 330 puntos o más la admisión es automática; con menos, se espera la lista de admitidos.",
+    "nocturn": "Los mayores de 25 años en jornada nocturna de pregrado tienen 20 % de descuento. Tienen jornada nocturna en Barranquilla: Derecho, Contaduría Pública, Ingeniería Industrial, Administración de Negocios Internacionales y Administración Logística. Los programas de Salud no tienen jornada nocturna.",
+    "beca": "La Universidad no maneja becas generales: ofrece un descuento del 100 % por reconocimiento público en ciencia, cultura, tecnología o deporte, y becas gestionadas con terceros (Fondo Patrimonial SENA, alcaldías) con convocatorias propias.",
+    "sena": "Las homologaciones del SENA tienen 20 % de descuento en matrícula durante los dos primeros semestres continuos.",
+    "inscripci": "La inscripción a programas de pregrado es gratuita; la de posgrado sí tiene costo.",
+    "virtual": "El único pregrado virtual es Contaduría Pública; en posgrado hay especializaciones y una maestría virtuales."
   }
 }

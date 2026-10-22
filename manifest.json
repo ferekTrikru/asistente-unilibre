@@ -1,13 +1,13 @@
 {
-  "name": "Asistente Combarranquilla — Barranquilla y el Atlántico",
-  "short_name": "Combarranquilla",
-  "description": "Agente inteligente de admisiones de Combarranquilla.",
+  "name": "Asistente Unilibre — Universidad Libre de Colombia",
+  "short_name": "Unilibre",
+  "description": "Agente inteligente de admisiones de la Universidad Libre.",
   "start_url": "/index.html",
   "id": "/index.html",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "background_color": "#111111",
+  "theme_color": "#c8102e",
   "orientation": "portrait",
   "lang": "es",
   "icons": [

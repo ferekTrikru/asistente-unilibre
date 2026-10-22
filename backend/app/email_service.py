@@ -16,7 +16,7 @@ import httpx
 from . import config
 
 RESEND_URL = "https://api.resend.com/emails"
-SUBJECT = "Tu cita con Combarranquilla está confirmada"
+SUBJECT = "Tu cita con la Universidad Libre está confirmada"
 
 
 def _build_html(appointment: dict) -> str:
@@ -25,7 +25,7 @@ def _build_html(appointment: dict) -> str:
     sede_line = f"<p><strong>Sede:</strong> {sede}</p>" if sede else ""
     return f"""
     <div style="font-family: sans-serif; max-width: 480px; margin: 0 auto;">
-      <h2 style="color:#007a3d;">Tu cita con Combarranquilla quedó confirmada</h2>
+      <h2 style="color:#c8102e;">Tu cita con la Universidad Libre quedó confirmada</h2>
       <p>Hola{f" {appointment['nombre']}" if appointment.get('nombre') else ''}, este es el resumen de tu cita:</p>
       <p><strong>Tipo de atención:</strong> {appointment['tipo']}</p>
       <p><strong>Modalidad:</strong> {appointment['modalidad']}</p>

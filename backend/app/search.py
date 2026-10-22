@@ -51,7 +51,7 @@ def detect_query_type(query_text: str) -> str:
     return "general"
 
 
-MAX_RESULTS = 5
+MAX_RESULTS = 8
 
 
 def smart_search(query_text: str, vector_store):

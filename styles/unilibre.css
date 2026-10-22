@@ -1,0 +1,140 @@
+/* =====================================================================
+   Identidad institucional — Universidad Libre de Colombia
+   Rojo (fortaleza, coraje), negro (formalidad, prestigio), amarillo
+   (inteligencia, honor) y blanco (perfección, pureza). El octágono de la
+   guía de colores se usa como forma de íconos y marcadores.
+   Se carga después del <style> de cada pantalla y lo sobrescribe.
+===================================================================== */
+:root{
+  --ul-red:        #c8102e;
+  --ul-red-bright: #e1251b;
+  --ul-red-deep:   #8a0b1f;
+  --ul-black:      #141414;
+  --ul-gold:       #f2a900;
+  --ul-white:      #ffffff;
+  --ul-octagon: polygon(29.3% 0, 70.7% 0, 100% 29.3%, 100% 70.7%, 70.7% 100%, 29.3% 100%, 0 70.7%, 0 29.3%);
+  --ul-band: linear-gradient(160deg, #d6152f 0%, var(--ul-red) 48%, var(--ul-red-deep) 100%);
+}
+
+/* ---------- Franja institucional (encabezado) ---------- */
+.topbar{
+  background: var(--ul-band);
+  color: var(--ul-white);
+  padding-bottom: 14px !important;
+  border-bottom: 0 !important;
+  box-shadow: 0 10px 24px -16px rgba(138,11,31,.9);
+}
+/* filete negro + dorado bajo la franja */
+.topbar::after{
+  content:""; position:absolute; left:0; right:0; bottom:-5px; height:5px;
+  background: linear-gradient(180deg, var(--ul-black) 0 3px, var(--ul-gold) 3px 5px);
+  pointer-events:none;
+}
+.topbar.is-joined{ box-shadow:none; }
+.topbar.is-joined::after{ display:none; }
+
+.topbar .iconbtn{ color: rgba(255,255,255,.92); }
+.topbar .iconbtn:hover{ background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.22); color:#fff; }
+
+.topbar h1{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  color:#fff; font-style:normal !important; font-weight:700 !important; letter-spacing:.005em;
+}
+.topbar h1::before{
+  content:""; width:28px; height:28px; flex-shrink:0; border-radius:50%;
+  background: url('../icons/unilibre-escudo.png') center/cover no-repeat;
+  box-shadow: 0 0 0 2px rgba(255,255,255,.85);
+}
+.topbar-title strong{ color:#fff; font-family: var(--font-display); font-size:16px !important; }
+.topbar-title span{ color: rgba(255,255,255,.78) !important; }
+.panel-badge{ color: var(--ul-black) !important; background: var(--ul-gold) !important; border-color: transparent !important; }
+
+/* Encabezado del chat: escudo + nombre en blanco */
+.brand img{ box-shadow: 0 0 0 2px rgba(255,255,255,.9), 0 6px 16px -6px rgba(0,0,0,.5) !important; }
+.brand-name b{ color:#fff !important; }
+.brand-name small{ color: var(--ul-gold) !important; }
+
+/* ---------- Menú lateral ---------- */
+.drawer{ padding-top:0 !important; background: var(--ul-white) !important; }
+.drawer h2{
+  flex-wrap:wrap;
+  margin: 0 -16px 10px;
+  padding: max(22px, env(safe-area-inset-top)) 20px 18px !important;
+  background: var(--ul-band);
+  color:#fff !important; font-style:normal !important; font-weight:700 !important; font-size:18px !important;
+  border-bottom: 4px solid var(--ul-gold);
+  box-shadow: inset 0 -7px 0 -4px var(--ul-black);
+}
+.drawer h2::after{
+  content:"Scientia Fons Libertatis";
+  flex-basis:100%; margin-top:10px;
+  font-family: var(--font-display); font-style:italic; font-weight:500; font-size:12.5px;
+  letter-spacing:.04em; color: var(--ul-gold);
+}
+.drawer-mark{ width:40px !important; height:40px !important; border-radius:50% !important; box-shadow:0 0 0 2px rgba(255,255,255,.9); }
+.drawer-item.is-active{ color: var(--ul-red) !important; background: rgba(200,16,46,.07) !important; }
+.drawer-item.is-active::before{
+  content:""; position:absolute; left:0; top:9px; bottom:9px; width:3px; border-radius:3px; background: var(--ul-red);
+}
+.drawer-foot{
+  border-top: 2px solid var(--ul-gold); margin: auto -16px -16px; padding: 14px 20px max(16px, env(safe-area-inset-bottom)) !important;
+  background: var(--ul-black); color: rgba(255,255,255,.75) !important; letter-spacing:.02em;
+}
+
+/* ---------- Octágonos ---------- */
+.pcard-icon,
+.empty .eicon{
+  clip-path: var(--ul-octagon);
+  border-radius:0 !important; border:0 !important;
+  background: var(--ul-band) !important;
+  color:#fff !important;
+}
+
+/* ---------- Títulos de sección: negro + marcador dorado ---------- */
+.fgroup-label strong,
+.section-title{
+  display:inline-flex; align-items:center; gap:8px;
+  color: var(--ul-black) !important;
+}
+.fgroup-label strong::before,
+.section-title::before{
+  content:""; width:9px; height:9px; flex-shrink:0;
+  background: var(--ul-gold); clip-path: var(--ul-octagon);
+}
+
+/* ---------- Tarjetas ---------- */
+.fgroup-card,
+.card,
+.acard,
+.appt-card{
+  background: var(--ul-white) !important;
+  border-top: 3px solid var(--ul-red) !important;
+}
+.empty h2,
+.card h2,
+.lead h1{ font-style:normal !important; font-weight:700 !important; color: var(--ul-black); }
+
+/* ---------- Botones y chips ---------- */
+.filter-chip.is-active{ background: var(--ul-black) !important; color:#fff !important; box-shadow: inset 0 -2px 0 var(--ul-gold); }
+.pbtn.primary, .cta, .empty a{ background: var(--ul-band) !important; color:#fff !important; }
+.pbtn.ghost{ background: transparent !important; border-color: var(--ul-black) !important; color: var(--ul-black) !important; }
+
+/* ---------- Lema institucional al pie ---------- */
+.ul-motto{
+  display:flex; align-items:center; justify-content:center; gap:10px;
+  font-family: var(--font-display); font-style:italic; font-size:12px; letter-spacing:.06em;
+  color: var(--ul-red-deep);
+}
+.ul-motto::before, .ul-motto::after{
+  content:""; width:26px; height:1px; background: var(--ul-gold);
+}
+
+/* ---------- Chat ---------- */
+.greet .hi{ color: var(--ul-red-deep) !important; display:inline-flex; align-items:center; justify-content:center; gap:8px; }
+.greet .hi::before, .greet .hi::after{ content:""; width:7px; height:7px; background: var(--ul-gold); clip-path: var(--ul-octagon); }
+.bot-avatar{
+  background: url('../icons/unilibre-escudo.png') center/cover no-repeat !important;
+  box-shadow: 0 0 0 1.5px var(--ul-gold), 0 4px 10px -4px rgba(0,0,0,.45) !important;
+}
+.msg.bot .bubble{ background: var(--ul-white) !important; border-left: 3px solid var(--ul-red) !important; }
+.chip:hover, .card-chip:hover:not(:disabled){ border-color: var(--ul-red) !important; }

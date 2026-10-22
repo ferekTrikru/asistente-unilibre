@@ -1,4 +1,4 @@
-const CACHE = 'asistente-combarranquilla-v1';
+const CACHE = 'asistente-unilibre-v5';
 const ASSETS = [
   '/',
   '/index.html',
@@ -9,8 +9,10 @@ const ASSETS = [
   '/manifest.json',
   '/icons/icon-192.png',
   '/icons/icon-512.png',
-  '/icons/combarranquilla-logo.png',
-  '/icons/combarranquilla-mark.png'
+  '/icons/unilibre-escudo.png',
+  '/icons/unilibre-mark.png',
+  '/styles/unilibre.css',
+  '/js/programas-unilibre.js'
 ];
 
 self.addEventListener('install', (event) => {

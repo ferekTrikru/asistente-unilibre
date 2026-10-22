@@ -163,7 +163,7 @@ screens/
   citas/                    Mis citas
   proceso/                  Mi proceso (etapas del aspirante)
   asesor/                   Vista del asesor (resumen de la conversación)
-icons/                      Logo e íconos de Combarranquilla
+icons/                      Escudo e íconos de la Universidad Libre
 backend/
   app/                      API (FastAPI): preguntas, citas, correo, llamadas
   data/                     Guía de Combarranquilla (fuente de las respuestas)
